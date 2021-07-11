@@ -1,44 +1,29 @@
-// DECLARAÇÃO DE CLASSES
-class KbdRptParser : public KeyboardReportParser{
+#ifndef LEITOR_H_INCLUDED
+#define LEITOR_H_INCLUDED
+
+#include <hidboot.h>
+#include <usbhub.h>
+#include <Arduino.h>
+
+class Leitor : public KeyboardReportParser{
+  public:
+    Leitor();
     void PrintKey(byte mod, byte key);
+    void setup();
+    void ler();  
+    bool completouCodigo();
+    String retornarCodigo();
+    void resetar();
 
   private:
+    bool leituraRealizada;
+    String codigoLido;
 
     void OnKeyDown  (byte mod, byte key);
     void OnKeyUp  (byte mod, byte key);
     void OnKeyPressed(byte key);
+
 };
 
-// IMPLEMENTO DE MÉTODOS
-void KbdRptParser::PrintKey(byte m, byte key){
-  MODIFIERKEYS mod;
-  *((byte*)&mod) = m;
-}
+#endif
 
-void KbdRptParser::OnKeyDown(byte mod, byte key){
-  PrintKey(mod, key);
-  byte c = OemToAscii(mod, key);
-
-  if (c)
-    OnKeyPressed(c);
-}
-
-void KbdRptParser::OnKeyUp(byte mod, byte key){
-  PrintKey(mod, key);
-}
-
-void KbdRptParser::OnKeyPressed(byte key){
-  
-  if(key == 19){
-    Serial.println("Leitura finalizada");
-    leituraRealizada = true;
-  }else{
-    codigoLido += (char)key;  
-  }
-  
-}
-
-// INSTANCIANDO OBJETOS
-USB     Usb;
-HIDBoot<USB_HID_PROTOCOL_KEYBOARD>    HidKeyboard(&Usb);
-KbdRptParser Prs;
