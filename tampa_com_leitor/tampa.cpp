@@ -11,16 +11,16 @@ Tampa::Tampa(int _pin, int _angAberta, int _angFechada,
 
 void Tampa::setup(){
   this->attach(pin);
-  this->fecha();
+  this->fechar();
 }
 
-void Tampa::abre(){
+void Tampa::abrir(){
   aberta = true;
   instanteAbertura = millis();
   this->write(angAberta);
 }
 
-void Tampa::fecha(){
+void Tampa::fechar(){
   aberta = false;
   this->write(angFechada);
 }

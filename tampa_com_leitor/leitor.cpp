@@ -31,6 +31,7 @@ void Leitor::ler(){
 }
 
 bool Leitor::completouCodigo(){
+  this->ler();
   return leituraRealizada;
 }
 

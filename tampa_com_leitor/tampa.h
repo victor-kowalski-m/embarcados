@@ -8,8 +8,8 @@ class Tampa : public Servo {
     Tampa(int _pin, int _angAberta, int _angFechada,
       int _delayFechamento);
     void setup();
-    void abre();
-    void fecha();
+    void abrir();
+    void fechar();
     bool estaAberta();
     bool passouDelay(long instante);
 

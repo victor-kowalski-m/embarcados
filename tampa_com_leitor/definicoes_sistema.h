@@ -1,12 +1,10 @@
 #ifndef DEFINICOES_SISTEMA_H_INCLUDED
 #define DEFINICOES_SISTEMA_H_INCLUDED
 
-#define MAX_TAREFAS 3
-
 // PINOS
 #define BOTAO            9
 #define LED_VERDE        2
-#define LED_AMARELO      8
+#define LED_VERMELHO     8
 #define SERVO_TAMPA      3
 #define TAMPA_ABERTA     30
 #define TAMPA_FECHADA    180
@@ -21,17 +19,16 @@
 
 // ESTADOS
 #define ESPERA   0
-#define LEITURA    1
+#define LEITURA  1
 #define UPLOAD   2
 
 // EVENTOS
 #define NENHUM_EVENTO -1
-#define APROXIMAR      0
-#define LER            1
-#define ENVIAR         2
-#define CONFIRMAR      3
-#define AFASTAR        4
-#define TIMEOUT        5
+#define PRESENCA       0
+#define CODIGO         1
+#define SUCESSO        2
+#define TIMEOUT        3
+#define AUSENCIA       4
 
 // ACOES
 #define NENHUMA_ACAO -1
@@ -43,4 +40,4 @@
 #define A06  5
 #define A07  6
 
-#endif // DEFINICOES_SISTEMA_H_INCLUDED
+#endif
