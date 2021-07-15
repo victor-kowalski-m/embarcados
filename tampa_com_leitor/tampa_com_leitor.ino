@@ -7,6 +7,7 @@
 #include "ultra.h"
 #include "tampa.h"
 #include "led.h"
+#include "modulo_wifi.h"
 
 /***********************************************************************
  Componentes
@@ -196,6 +197,8 @@ void setup() {
   ultra.setup();
   tampa.setup();
   ledVerde.setup();
+  ledVermelho.setup();
+  configura_wifi();
   iniciaMaquinaEstados();
 
 }

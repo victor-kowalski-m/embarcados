@@ -2,15 +2,18 @@
 #define DEFINICOES_SISTEMA_H_INCLUDED
 
 // PINOS
-#define BOTAO            9
-#define LED_VERDE        2
-#define LED_VERMELHO     8
-#define SERVO_TAMPA      3
-#define TAMPA_ABERTA     30
+#define TRIGGER_PIN      2
+#define ECHO_PIN         3  
+#define LED_VERDE        4
+#define LED_VERMELHO     5
+#define SERVO_TAMPA      7
+#define TX_ESP           8
+#define RX_ESP           9
+
+// PARAMETROS NUMERICOS
+#define TAMPA_ABERTA     90
 #define TAMPA_FECHADA    180
 #define DELAY_TAMPA      2000
-#define ECHO_PIN         4  
-#define TRIGGER_PIN      5
 #define DIST_ATIVA_ULTRA 5
 
 // MAQUINA DE ESTADOS
