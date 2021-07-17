@@ -14,7 +14,7 @@
 #define ECHO_PIN         3  
 #define LED_VERDE        4
 #define LED_VERMELHO     5
-#define SERVO_TAMPA      14
+#define SERVO_TAMPA      19
 #define TX_COM_ESP           8
 #define RX_COM_ESP           9
 #define DEBUG_COMANDOS_AT true

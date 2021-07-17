@@ -27,6 +27,7 @@ const char CWMODE = '1';//CWMODE 1=STATION, 2=APMODE, 3=BOTH
 const char CIPMUX = '1';//CWMODE 0=Single Connection, 1=Multiple Connections
 
 SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin);// rx tx
+//auto& ESP8266 = Serial;
 
 //DEFINE ALL FUNCTIONS HERE
 boolean setup_ESP();
@@ -47,7 +48,7 @@ char ip_address[16];
 // String payload_closer = " HTTP/1.0\r\n\r\n";
 const char payload_closer[] = " HTTP/1.0\r\n\r\n";
 
-char resposta_from_ESP[50];
+char resposta_site[1];
 
 //DEFINE KEYWORDS HERE
 const char keyword_OK[] = "OK";
@@ -60,7 +61,7 @@ const char keyword_quote[] = "\"";
 const char keyword_carrot[] = ">";
 const char keyword_sendok[] = "SEND OK";
 const char keyword_linkdisc[] = "Unlink";
-const char keyword_resposta[] = "Resposta: ";
+//const char keyword_resposta[] = "Resposta: ";
 const char keyword_doublehash[] = "##";
 
 
@@ -125,13 +126,17 @@ int executarAcao(int codigoAcao) {
         TaskController.ativaTask(taskPiscaLeds, 100, 0);
         connect_webhost();
         for (int i=0; codigoDeBarras[i]!=0; i++)
-          Serial.print(codigoDeBarras[i]);
-//        for (int i=0; i <= 5; i++)
-//          Serial.print("pi");
-        Serial.println();
+          //##Serial.print(codigoDeBarras[i]);
+        //##Serial.println();
         leitor.resetar();
-        ledVerde.ligar();
-        ledVermelho.ligar();
+        TaskController.desativaTask(taskPiscaLeds);       
+        if ((resposta_site-48) == DECREMENTOU){
+          ledVerde.ligar();
+          ledVermelho.desligar();
+        } else {
+          ledVermelho.ligar();
+          ledVerde.desligar();
+        }
         break;
     case A04:
         // ignora código lido
@@ -268,7 +273,7 @@ void setup() {
   pinMode(ESP8266_rxPin, INPUT);
   pinMode(ESP8266_txPin, OUTPUT);
   ESP8266.begin(9600);//default baudrate for ESP
-  ESP8266.listen();//not needed unless using other software serial instances
+//  ESP8266.listen();//not needed unless using other software serial instances
   Serial.begin(9600);
 
   leitor.setup();

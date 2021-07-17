@@ -16,15 +16,15 @@ void Leitor::PrintKey(byte m, byte key){
 }
 
 void Leitor::setup(){
-  // Serial.println("Iniciando USB Host Shield");
+  // //##Serial.println("Iniciando USB Host Shield");
   if (Usb.Init() == -1) {
-    // Serial.println("Falha ao iniciar USB");
+    // //##Serial.println("Falha ao iniciar USB");
   }
   delay( 200 );
 
-  // Serial.println("Iniciando Leitor de Código de Barras");
+  // //##Serial.println("Iniciando Leitor de Código de Barras");
   HidKeyboard.SetReportParser(0, this);
-  // Serial.println("Setup concluído");
+  // //##Serial.println("Setup concluído");
 
   codigoDeBarras[0] = 0;
   
