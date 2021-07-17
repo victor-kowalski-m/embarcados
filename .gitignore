@@ -1,3 +1,6 @@
 .vscode/
 .ArduinoOutput/
 alarme_taskswitcher/
+ESP8266_BASE*
+BACKUP WIFI
+BlinkTicker

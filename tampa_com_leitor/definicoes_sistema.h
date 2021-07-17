@@ -1,14 +1,23 @@
 #ifndef DEFINICOES_SISTEMA_H_INCLUDED
 #define DEFINICOES_SISTEMA_H_INCLUDED
 
+#define MAX_TAREFAS 3
+
+// RESPOSTAS DA WEB
+#define SEM_RESPOSTA 0
+#define DECREMENTOU 1
+#define COD_INEXISTENTE 2
+#define DESPENSA_SEM_PROD 3
+
 // PINOS
 #define TRIGGER_PIN      2
 #define ECHO_PIN         3  
 #define LED_VERDE        4
 #define LED_VERMELHO     5
-#define SERVO_TAMPA      7
-#define TX_ESP           8
-#define RX_ESP           9
+#define SERVO_TAMPA      14
+#define TX_COM_ESP           8
+#define RX_COM_ESP           9
+#define DEBUG_COMANDOS_AT true
 
 // PARAMETROS NUMERICOS
 #define TAMPA_ABERTA     90

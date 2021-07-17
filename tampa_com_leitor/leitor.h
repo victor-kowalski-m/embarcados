@@ -7,17 +7,18 @@
 
 class Leitor : public KeyboardReportParser{
   public:
-    Leitor();
+    Leitor(char *_codigoDeBarras);
     void PrintKey(byte mod, byte key);
     void setup();
     void ler();  
     bool completouCodigo();
-    String retornarCodigo();
+    // char fimDoCodigo();
     void resetar();
 
   private:
     bool leituraRealizada;
-    String codigoLido;
+    char *codigoDeBarras;
+    char idx_codBar;
 
     void OnKeyDown  (byte mod, byte key);
     void OnKeyUp  (byte mod, byte key);
@@ -26,4 +27,3 @@ class Leitor : public KeyboardReportParser{
 };
 
 #endif
-

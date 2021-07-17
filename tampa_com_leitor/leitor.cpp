@@ -3,8 +3,10 @@
 USB Usb;
 HIDBoot<USB_HID_PROTOCOL_KEYBOARD> HidKeyboard(&Usb);
 
-Leitor::Leitor(){
-  codigoLido = "";
+Leitor::Leitor(char *_codigoDeBarras){
+//  codigoLido = "";
+  codigoDeBarras = _codigoDeBarras;
+  idx_codBar = 0;
   leituraRealizada = false;
 }
 
@@ -14,15 +16,17 @@ void Leitor::PrintKey(byte m, byte key){
 }
 
 void Leitor::setup(){
-  Serial.println("Iniciando USB Host Shield");
+  // Serial.println("Iniciando USB Host Shield");
   if (Usb.Init() == -1) {
-    Serial.println("Falha ao iniciar USB");
+    // Serial.println("Falha ao iniciar USB");
   }
   delay( 200 );
 
-  Serial.println("Iniciando Leitor de Código de Barras");
+  // Serial.println("Iniciando Leitor de Código de Barras");
   HidKeyboard.SetReportParser(0, this);
-  Serial.println("Setup concluído");
+  // Serial.println("Setup concluído");
+
+  codigoDeBarras[0] = 0;
   
 }
 
@@ -35,12 +39,16 @@ bool Leitor::completouCodigo(){
   return leituraRealizada;
 }
 
-String Leitor::retornarCodigo(){
-    return codigoLido;
-}
+// char* Leitor::retornarCodigo(){
+//     return codigoLido;
+// }
+
+// char Leitor::fimDoCodigo(){
+//     return idx_codBar;
+// }
 
 void Leitor::resetar(){
-    codigoLido = "";
+    idx_codBar = 0;
     leituraRealizada = false;
 }
 
@@ -59,11 +67,10 @@ void Leitor::OnKeyUp(byte mod, byte key){
 void Leitor::OnKeyPressed(byte key){
   if (!leituraRealizada){
     if(key == 19){
+      codigoDeBarras[idx_codBar++] = 0;
       leituraRealizada = true;
     } else {
-      codigoLido += (char)key;  
+      codigoDeBarras[idx_codBar++] = (char)key;  
     }
   }
 }
-
-
