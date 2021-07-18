@@ -39,14 +39,6 @@ bool Leitor::completouCodigo(){
   return leituraRealizada;
 }
 
-// char* Leitor::retornarCodigo(){
-//     return codigoLido;
-// }
-
-// char Leitor::fimDoCodigo(){
-//     return idx_codBar;
-// }
-
 void Leitor::resetar(){
     idx_codBar = 0;
     leituraRealizada = false;

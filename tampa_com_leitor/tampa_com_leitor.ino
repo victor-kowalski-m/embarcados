@@ -10,24 +10,16 @@
 #include "led.h"
 #include "task_switcher.h"
 
-//#define _SS_MAX_RX_BUFF 256 
-#define ESP8266_rxPin 15
-#define ESP8266_txPin 16
-
 //SSID + KEY
 const char SSID_ESP[] = "DeMartins";
 const char SSID_KEY[] = "loja2512demartins";
 
 // URLs
-// String URL_webhost = "GET /lixeira_decrementa/16/";
 const char payload_opener[] = "GET /lixeira_decrementa/16/";
 
 //MODES
 const char CWMODE = '1';//CWMODE 1=STATION, 2=APMODE, 3=BOTH
 const char CIPMUX = '1';//CWMODE 0=Single Connection, 1=Multiple Connections
-
-SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin);// rx tx
-//auto& ESP8266 = Serial;
 
 //DEFINE ALL FUNCTIONS HERE
 boolean setup_ESP();
@@ -44,11 +36,8 @@ char scratch_data_from_ESP[20];//first byte is the length of bytes
 char payload[150];
 byte payload_size=0; //, counter=0;
 char ip_address[16];
-// String URL_withPacket = "";
-// String payload_closer = " HTTP/1.0\r\n\r\n";
 const char payload_closer[] = " HTTP/1.0\r\n\r\n";
-
-char resposta_site[10];
+char resposta_site[2];
 
 //DEFINE KEYWORDS HERE
 const char keyword_OK[] = "OK";
@@ -61,22 +50,12 @@ const char keyword_quote[] = "\"";
 const char keyword_carrot[] = ">";
 const char keyword_sendok[] = "SEND OK";
 const char keyword_linkdisc[] = "Unlink";
-//const char keyword_resposta[] = "Resposta: ";
 const char keyword_doublehash[] = "##";
 
 
 /*
     LIXEIRA INTELIGENTE
 */
-
-/***********************************************************************
- Componentes
- ***********************************************************************/
-// Leitor leitor;
-Ultra ultra(ECHO_PIN, TRIGGER_PIN, DIST_ATIVA_ULTRA);
-Tampa tampa(SERVO_TAMPA, TAMPA_ABERTA, TAMPA_FECHADA, DELAY_TAMPA);
-Led ledVerde(LED_VERDE);
-Led ledVermelho(LED_VERMELHO);
 
 /***********************************************************************
  Estaticos
@@ -95,17 +74,17 @@ char idxTaskPiscaLeds;
 char idxTaskMantemVerde;
 char idxTaskMantemVermelho;
 
-// char fimDoCod;
-
+/***********************************************************************
+ Componentes
+ ***********************************************************************/
+Ultra ultra(ECHO_PIN, TRIGGER_PIN, DIST_ATIVA_ULTRA);
+Tampa tampa(SERVO_TAMPA, TAMPA_ABERTA, TAMPA_FECHADA, DELAY_TAMPA);
+Led ledVerde(LED_VERDE);
+Led ledVermelho(LED_VERMELHO);
+SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin);// rx tx
 Leitor leitor(codigoDeBarras);
 
-/************************************************************************
- executarAcao
- Executa uma acao
- Parametros de entrada:
-    (int) codigo da acao a ser executada
- Retorno: (int) codigo do evento interno ou NENHUM_EVENTO
-*************************************************************************/
+
 int executarAcao(int codigoAcao) {
     
     int retval = NENHUM_EVENTO;
@@ -122,20 +101,15 @@ int executarAcao(int codigoAcao) {
         break;
     case A03:
         // inicia upload
-        // codigoDeBarras = leitor.retornarCodigo();
-        // fimDoCod = leitor.fimDoCodigo();
-        ledVerde.ligar();
+        leitor.resetar();
         TaskController.ativaTask(idxTaskPiscaLeds, 200, 0);
         connect_webhost();         
-        leitor.resetar();
         TaskController.desativaTask(idxTaskPiscaLeds);
         ledVermelho.desligar();
         ledVerde.desligar();      
         if ((resposta_site[1]-48) == DECREMENTOU){
-//          ledVerde.ligar();
           retval = SUCESSO;
         } else {
-//          ledVermelho.ligar();
           retval = ERRO;
         }
         break;
@@ -145,27 +119,18 @@ int executarAcao(int codigoAcao) {
         break;
     case A05:
         // confirma upload
-//        ledVermelho.desligar();
-        ledVerde.desligar();
-        idxTaskMantemVerde = TaskController.createTask(&piscaVerde, 5000, 2, true);
+        idxTaskMantemVerde = TaskController.createTask(&piscaVerde, 100, 20, true);
         break;
     case A06:
         // erro no upload
-        ledVermelho.desligar();
-//        ledVerde.desligar();
-        idxTaskMantemVermelho = TaskController.createTask(&piscaVermelho, 5000, 2, true);
+        idxTaskMantemVermelho = TaskController.createTask(&piscaVermelho, 100, 20, true);
         break;
     }
 
     return retval;
 } // executarAcao
 
-/************************************************************************
- iniciaMaquina de Estados
- Carrega a maquina de estados
- Parametros de entrada: nenhum
- Retorno: nenhum
-*************************************************************************/
+
 void iniciaMaquinaEstados()
 {
   int i;
@@ -183,7 +148,7 @@ void iniciaMaquinaEstados()
   acao_matrizTransicaoEstados[LEITURA][PRESENCA] = A01;
   acao_matrizTransicaoEstados[UPLOAD ][PRESENCA] = A01;
 
-  proximo_estado_matrizTransicaoEstados[LEITURA][CODIGO] = UPLOAD; // UPLOAD;
+  proximo_estado_matrizTransicaoEstados[LEITURA][CODIGO] = UPLOAD;
   acao_matrizTransicaoEstados[LEITURA][CODIGO] = A03;
   acao_matrizTransicaoEstados[UPLOAD ][CODIGO] = A04;
   acao_matrizTransicaoEstados[ESPERA ][CODIGO] = A04;
@@ -200,24 +165,12 @@ void iniciaMaquinaEstados()
 
 }
 
-/************************************************************************
- obterAcao
- Obtem uma acao da Matriz de transicao de estados
- Parametros de entrada: estado (int)
-                        evento (int)
- Retorno: codigo da acao
-*************************************************************************/
+
 int obterAcao(int estado, int codigoEvento) {
   return acao_matrizTransicaoEstados[estado][codigoEvento];
 } // obterAcao
 
-/************************************************************************
- obterProximoEstado
- Obtem o proximo estado da Matriz de transicao de estados
- Parametros de entrada: estado (int)
-                        evento (int)
- Retorno: codigo do estado
-*************************************************************************/
+
 int obterProximoEstado(int estado, int codigoEvento) {
   return proximo_estado_matrizTransicaoEstados[estado][codigoEvento];
 } // obterAcao
@@ -238,12 +191,6 @@ void MaqEstados() {
 
 }
 
-/************************************************************************
- obterEvento
- Obtem um evento, que pode ser da IHM ou do alarme
- Parametros de entrada: nenhum
- Retorno: codigo do evento
-*************************************************************************/
 int obterEvento() {
 
   codigoEvento = NENHUM_EVENTO;
@@ -260,55 +207,39 @@ int obterEvento() {
     codigoEvento = AUSENCIA;
     return;
   }
-  // if (wifi.sucesso()) {
-  //   codigoEvento = CONFIRMAR;
-  //   return;
-  // }
-  // if (tmr.timeout()) {
-  //   codigoEvento = TIMEOUT;
-  //   return;
-  // }
 
   return;
 }
 
 
-//void taskMaqEstados() {
-//  if (eventoInterno != NENHUM_EVENTO) {
-//      codigoEvento = eventoInterno;
-//  }
-//  if (codigoEvento != NENHUM_EVENTO)
-//  {
-//      codigoAcao = obterAcao(estado, codigoEvento);
-//      estado = obterProximoEstado(estado, codigoEvento);
-//      eventoInterno = executarAcao(codigoAcao);
-//  }
-//}
-//
-//void taskObterEvento() {
-//  codigoEvento = NENHUM_EVENTO;
-//
-//  if (ultra.algoProximo()) {
-//    codigoEvento = PRESENCA;
-//    return;
-//  }
-//  if (leitor.completouCodigo()) {
-//    codigoEvento = CODIGO;
-//    return;
-//  }
-//  if (tampa.passouDelay()) {
-//    codigoEvento = AUSENCIA;
-//    return;
-//  }
-//  // if (wifi.sucesso()) {
-//  //   codigoEvento = CONFIRMAR;
-//  //   return;
-//  // }
-//  // if (tmr.timeout()) {
-//  //   codigoEvento = TIMEOUT;
-//  //   return;
-//  // }
-//}
+void taskMaqEstados() {
+  if (eventoInterno != NENHUM_EVENTO) {
+      codigoEvento = eventoInterno;
+  }
+  if (codigoEvento != NENHUM_EVENTO)
+  {
+      codigoAcao = obterAcao(estado, codigoEvento);
+      estado = obterProximoEstado(estado, codigoEvento);
+      eventoInterno = executarAcao(codigoAcao);
+  }
+}
+
+void taskObterEvento() {
+  codigoEvento = NENHUM_EVENTO;
+
+  if (ultra.algoProximo()) {
+    codigoEvento = PRESENCA;
+    return;
+  }
+  if (leitor.completouCodigo()) {
+    codigoEvento = CODIGO;
+    return;
+  }
+  if (tampa.passouDelay()) {
+    codigoEvento = AUSENCIA;
+    return;
+  }
+}
 
 void piscaLeds() {
   ledVerde.toggle();
@@ -327,8 +258,6 @@ void setup() {
   pinMode(ESP8266_rxPin, INPUT);
   pinMode(ESP8266_txPin, OUTPUT);
   ESP8266.begin(9600);//default baudrate for ESP
-//  ESP8266.listen();//not needed unless using other software serial instances
-  //Serial.begin(9600);
 
   leitor.setup();
   ultra.setup();
@@ -336,7 +265,7 @@ void setup() {
   ledVerde.setup();
   ledVermelho.setup();
 
-//  idxTaskPiscaLeds = TaskController.createTask(&taskMaqEstados, 200, 0, true);
+//  idxTaskMaqEstados = TaskController.createTask(&taskMaqEstados, 200, 0, true);
 //  idxTaskObterEvento =TaskController.createTask(&taskObterEvento, 200, 0, true);
   idxTaskPiscaLeds = TaskController.createTask(&piscaLeds, 500, 0, false);
   idxTaskMantemVerde = TaskController.createTask(&piscaVerde, 2000, 0, false);

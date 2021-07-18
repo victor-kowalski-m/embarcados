@@ -172,7 +172,7 @@ boolean read_until_ESP(const char keyword1[], int key_size, int timeout_val, byt
 boolean connect_ESP(){//returns 1 if successful or 0 if not
 
   //##Serial.println("CONNECTING");
-  ESP8266.print("AT+CIPSTART=0,\"TCP\",\"192.168.0.10\",8080\r\n");//connect to your web server
+  ESP8266.print("AT+CIPSTART=0,\"TCP\",\"192.168.0.25\",8080\r\n");//connect to your web server
   //read_until_ESP(keyword,size of the keyword,timeout in ms, data save 0-no 1-yes 'more on this later') 
   if(read_until_ESP(keyword_OK,sizeof(keyword_OK),5000,0)){//go look for 'OK' and come back
   serial_dump_ESP();//get rid of whatever else is coming
@@ -208,13 +208,8 @@ boolean connect_ESP(){//returns 1 if successful or 0 if not
 
 
 void connect_webhost(){
-//we have changing variable here, so we need to first build up our URL packet
-  // URL_withPacket = URL_webhost;//pull in the base URL
-  // URL_withPacket += codigoDeBarras;//unit id value
-  // URL_withPacket += payload_closer;
 
-  /// This builds out the payload URL - not really needed here, but is very handy when adding different arrays to the payload
-  // counter=0;//keeps track of the payload size
+  // This builds out the payload URL - not really needed here, but is very handy when adding different arrays to the payload
   char i;
   payload_size=0;
   for(i=0; payload_opener[i]!=0; i++){
@@ -226,17 +221,6 @@ void connect_webhost(){
   for(i=0; payload_closer[i]!=0; i++){
     payload[payload_size++] = payload_closer[i]; 
   }
-
-  // /// This builds out the payload URL - not really needed here, but is very handy when adding different arrays to the payload
-  // counter=0;//keeps track of the payload size
-  // payload_size=0;
-  // for(int i=0; i<(URL_withPacket.length()); i++){//using a string this time, so use .length()
-  //   payload[payload_size+i] = URL_withPacket[i];//build up the payload
-  //   counter++;//increment the counter
-  // }//for int
-  // payload_size = counter+payload_size;//payload size is just the counter value - more on this when we need to build out the payload with more data
-    //for(int i=0; i<payload_size; i++)//print the payload to the ESP
-    ////##Serial.print(payload[i]);
    
   if(connect_ESP()){//this calls 'connect_ESP()' and expects a '1' back if successful
   //nice, we're in and ready to look for data
