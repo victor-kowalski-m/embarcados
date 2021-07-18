@@ -38,24 +38,25 @@ void TaskSwitcher::begin(long timerInterruptInuSecs) {
   interrupts();             // enable all interrupts
 }
 
-TaskControl *TaskSwitcher::createTask(void (*t)(), int interval, char execucoes, bool ativa) {
+char TaskSwitcher::createTask(void (*t)(), int interval, char execucoes, bool ativa) {
   taskList[taskCount++] = {t, interval, 0, READY, execucoes, ativa};
-  return &(taskList[taskCount-1]);
+  return (taskCount-1);
 }
 
-void TaskSwitcher::ativaTask(TaskControl *task, int interval, char execucoes) {
+void TaskSwitcher::ativaTask(char idxTask, int interval, char execucoes) {
   noInterrupts(); 
-  task->ativa = true;
-  task->status = READY;
-  task->execucoes = execucoes;
+  taskList[idxTask].ativa = true;
+  taskList[idxTask].status = READY;
+  taskList[idxTask].execucoes = execucoes;
   if (interval != 0){
-    task->interval = interval;
+    taskList[idxTask].interval = interval;
   }
   interrupts();
 }
-void TaskSwitcher::desativaTask(TaskControl *task) {
+void TaskSwitcher::desativaTask(char idxTask) {
   noInterrupts(); 
-  task->ativa = false;
+  taskList[idxTask].ativa = false;
+  taskList[idxTask].status = WAIT;
   interrupts();
 }
     

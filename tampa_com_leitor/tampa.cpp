@@ -11,24 +11,30 @@ Tampa::Tampa(int _pin, int _angAberta, int _angFechada,
 
 void Tampa::setup(){
   this->attach(pin);
+  aberta = true;
+  instanteAbertura = 0;
   this->fechar();
 }
 
 void Tampa::abrir(){
-  aberta = true;
+  if(!aberta) {
+    this->write(angAberta);
+    aberta = true;
+  }
   instanteAbertura = millis();
-  this->write(angAberta);
 }
 
 void Tampa::fechar(){
-  aberta = false;
-  this->write(angFechada);
+  if(aberta) {
+    this->write(angFechada);
+    aberta = false;
+  }
 }
 
 bool Tampa::estaAberta(){
   return aberta;
 }
 
-bool Tampa::passouDelay(long instante){
-  return (instante-instanteAbertura) > delayFechamento;
+bool Tampa::passouDelay(){
+  return (millis()-instanteAbertura) > delayFechamento;
 }

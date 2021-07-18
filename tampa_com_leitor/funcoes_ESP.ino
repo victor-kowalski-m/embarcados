@@ -7,6 +7,7 @@ boolean setup_ESP(){//returns a '1' if successful
     ;
   else
     //##Serial.println("ESP CHECK FAILED");
+    ;
   serial_dump_ESP();//this just reads everything in the buffer and what's still coming from the ESP
 
    ESP8266.print("AT+RST\r\n");// Give it a reset - who knows what condition it was in, better to start fresh
@@ -14,7 +15,8 @@ boolean setup_ESP(){//returns a '1' if successful
     //##Serial.println("ESP RESET OK");//depneding on the FW version on the ESP, sometimes the Ready is with a lowercase r - ready
     ;
   else
-    //##Serial.println("ESP RESET FAILED"); 
+    //##Serial.println("ESP RESET FAILED");
+    ; 
   serial_dump_ESP();
   
    ESP8266.print("AT+CWMODE=");// set the CWMODE
@@ -25,6 +27,7 @@ boolean setup_ESP(){//returns a '1' if successful
     ;
   else
     //##Serial.println("ESP CWMODE SET FAILED"); //probably going to fail, since a 'no change' is returned if already set - would be nice to check for two words
+    ;
   serial_dump_ESP();  
    
    //Here's where the SSID and PW are set
@@ -37,7 +40,8 @@ boolean setup_ESP(){//returns a '1' if successful
     //##Serial.println("ESP SSID SET OK");
     ;
   else
-    //##Serial.println("ESP SSID SET FAILED");   
+    //##Serial.println("ESP SSID SET FAILED");
+    ;   
   serial_dump_ESP();
   
   //This checks for and stores the IP address
@@ -59,6 +63,7 @@ boolean setup_ESP(){//returns a '1' if successful
   }}//if first \r\n
   else
   //##Serial.print("IP ADDRESS FAIL");
+  ;
   serial_dump_ESP();
   
    ESP8266.print("AT+CIPMUX=");// set the CIPMUX
@@ -66,6 +71,7 @@ boolean setup_ESP(){//returns a '1' if successful
    ESP8266.print("\r\n");
   if(read_until_ESP(keyword_OK,sizeof(keyword_OK),5000,0)){//go look for keyword "OK" or "no change 
     //##Serial.println("ESP CIPMUX SET");
+    ;
   } else {
     //##Serial.println("ESP CIPMUX SET FAILED");
     return false;

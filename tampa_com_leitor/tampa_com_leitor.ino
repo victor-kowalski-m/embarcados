@@ -48,7 +48,7 @@ char ip_address[16];
 // String payload_closer = " HTTP/1.0\r\n\r\n";
 const char payload_closer[] = " HTTP/1.0\r\n\r\n";
 
-char resposta_site[1];
+char resposta_site[10];
 
 //DEFINE KEYWORDS HERE
 const char keyword_OK[] = "OK";
@@ -81,8 +81,6 @@ Led ledVermelho(LED_VERMELHO);
 /***********************************************************************
  Estaticos
  ***********************************************************************/
-const int num_leds = 2;
-Led leds[] = {ledVerde, ledVermelho};
 int codigoEvento = NENHUM_EVENTO;
 int eventoInterno = NENHUM_EVENTO;
 int estado = ESPERA;
@@ -91,7 +89,11 @@ int acao_matrizTransicaoEstados[NUM_ESTADOS][NUM_EVENTOS];
 int proximo_estado_matrizTransicaoEstados[NUM_ESTADOS][NUM_EVENTOS];
 char codigoDeBarras[20];
 
-TaskControl *taskPiscaLeds;
+char idxTaskMaqEstados;
+char idxTaskObterEvento;
+char idxTaskPiscaLeds;
+char idxTaskMantemVerde;
+char idxTaskMantemVermelho;
 
 // char fimDoCod;
 
@@ -123,19 +125,18 @@ int executarAcao(int codigoAcao) {
         // codigoDeBarras = leitor.retornarCodigo();
         // fimDoCod = leitor.fimDoCodigo();
         ledVerde.ligar();
-        TaskController.ativaTask(taskPiscaLeds, 100, 0);
-        connect_webhost();
-        for (int i=0; codigoDeBarras[i]!=0; i++)
-          //##Serial.print(codigoDeBarras[i]);
-        //##Serial.println();
+        TaskController.ativaTask(idxTaskPiscaLeds, 200, 0);
+        connect_webhost();         
         leitor.resetar();
-        TaskController.desativaTask(taskPiscaLeds);       
-        if ((resposta_site-48) == DECREMENTOU){
-          ledVerde.ligar();
-          ledVermelho.desligar();
+        TaskController.desativaTask(idxTaskPiscaLeds);
+        ledVermelho.desligar();
+        ledVerde.desligar();      
+        if ((resposta_site[1]-48) == DECREMENTOU){
+//          ledVerde.ligar();
+          retval = SUCESSO;
         } else {
-          ledVermelho.ligar();
-          ledVerde.desligar();
+//          ledVermelho.ligar();
+          retval = ERRO;
         }
         break;
     case A04:
@@ -144,13 +145,15 @@ int executarAcao(int codigoAcao) {
         break;
     case A05:
         // confirma upload
-        ledVermelho.desligar();
-        ledVerde.ligar();
+//        ledVermelho.desligar();
+        ledVerde.desligar();
+        idxTaskMantemVerde = TaskController.createTask(&piscaVerde, 5000, 2, true);
         break;
     case A06:
         // erro no upload
-        ledVermelho.ligar();
-        ledVerde.desligar();
+        ledVermelho.desligar();
+//        ledVerde.desligar();
+        idxTaskMantemVermelho = TaskController.createTask(&piscaVermelho, 5000, 2, true);
         break;
     }
 
@@ -180,7 +183,7 @@ void iniciaMaquinaEstados()
   acao_matrizTransicaoEstados[LEITURA][PRESENCA] = A01;
   acao_matrizTransicaoEstados[UPLOAD ][PRESENCA] = A01;
 
-  proximo_estado_matrizTransicaoEstados[LEITURA][CODIGO] = LEITURA; // UPLOAD;
+  proximo_estado_matrizTransicaoEstados[LEITURA][CODIGO] = UPLOAD; // UPLOAD;
   acao_matrizTransicaoEstados[LEITURA][CODIGO] = A03;
   acao_matrizTransicaoEstados[UPLOAD ][CODIGO] = A04;
   acao_matrizTransicaoEstados[ESPERA ][CODIGO] = A04;
@@ -188,8 +191,8 @@ void iniciaMaquinaEstados()
   proximo_estado_matrizTransicaoEstados[UPLOAD][SUCESSO] = LEITURA;
   acao_matrizTransicaoEstados[UPLOAD][SUCESSO] = A05;
 
-  proximo_estado_matrizTransicaoEstados[UPLOAD][TIMEOUT] = LEITURA;
-  acao_matrizTransicaoEstados[UPLOAD][TIMEOUT] = A06;
+  proximo_estado_matrizTransicaoEstados[UPLOAD][ERRO] = LEITURA;
+  acao_matrizTransicaoEstados[UPLOAD][ERRO] = A06;
 
   proximo_estado_matrizTransicaoEstados[LEITURA][AUSENCIA] = ESPERA;
   acao_matrizTransicaoEstados[LEITURA][AUSENCIA] = A02;
@@ -222,7 +225,7 @@ int obterProximoEstado(int estado, int codigoEvento) {
 
 void MaqEstados() {
   if (eventoInterno == NENHUM_EVENTO) {
-      codigoEvento = obterEvento();
+      obterEvento();
   } else {
       codigoEvento = eventoInterno;
   }
@@ -243,14 +246,19 @@ void MaqEstados() {
 *************************************************************************/
 int obterEvento() {
 
+  codigoEvento = NENHUM_EVENTO;
+
   if (ultra.algoProximo()) {
-    return PRESENCA;
+    codigoEvento = PRESENCA;
+    return;
   }
   if (leitor.completouCodigo()) {
-    return CODIGO;
+    codigoEvento = CODIGO;
+    return;
   }
-  if (tampa.passouDelay(millis())) {
-    return AUSENCIA;
+  if (tampa.passouDelay()) {
+    codigoEvento = AUSENCIA;
+    return;
   }
   // if (wifi.sucesso()) {
   //   codigoEvento = CONFIRMAR;
@@ -261,11 +269,57 @@ int obterEvento() {
   //   return;
   // }
 
-  return NENHUM_EVENTO;
+  return;
 }
+
+
+//void taskMaqEstados() {
+//  if (eventoInterno != NENHUM_EVENTO) {
+//      codigoEvento = eventoInterno;
+//  }
+//  if (codigoEvento != NENHUM_EVENTO)
+//  {
+//      codigoAcao = obterAcao(estado, codigoEvento);
+//      estado = obterProximoEstado(estado, codigoEvento);
+//      eventoInterno = executarAcao(codigoAcao);
+//  }
+//}
+//
+//void taskObterEvento() {
+//  codigoEvento = NENHUM_EVENTO;
+//
+//  if (ultra.algoProximo()) {
+//    codigoEvento = PRESENCA;
+//    return;
+//  }
+//  if (leitor.completouCodigo()) {
+//    codigoEvento = CODIGO;
+//    return;
+//  }
+//  if (tampa.passouDelay()) {
+//    codigoEvento = AUSENCIA;
+//    return;
+//  }
+//  // if (wifi.sucesso()) {
+//  //   codigoEvento = CONFIRMAR;
+//  //   return;
+//  // }
+//  // if (tmr.timeout()) {
+//  //   codigoEvento = TIMEOUT;
+//  //   return;
+//  // }
+//}
 
 void piscaLeds() {
   ledVerde.toggle();
+  ledVermelho.toggle();
+}
+
+void piscaVerde() {
+  ledVerde.toggle();
+}
+
+void piscaVermelho() {
   ledVermelho.toggle();
 }
 
@@ -274,17 +328,26 @@ void setup() {
   pinMode(ESP8266_txPin, OUTPUT);
   ESP8266.begin(9600);//default baudrate for ESP
 //  ESP8266.listen();//not needed unless using other software serial instances
-  Serial.begin(9600);
+  //Serial.begin(9600);
 
   leitor.setup();
   ultra.setup();
   tampa.setup();
   ledVerde.setup();
   ledVermelho.setup();
+
+//  idxTaskPiscaLeds = TaskController.createTask(&taskMaqEstados, 200, 0, true);
+//  idxTaskObterEvento =TaskController.createTask(&taskObterEvento, 200, 0, true);
+  idxTaskPiscaLeds = TaskController.createTask(&piscaLeds, 500, 0, false);
+  idxTaskMantemVerde = TaskController.createTask(&piscaVerde, 2000, 0, false);
+  idxTaskMantemVermelho = TaskController.createTask(&piscaVermelho, 2000, 0, false);
+
+  iniciaMaquinaEstados();
+  TaskController.begin(1000); // tick @1ms (1000 us)
+  
   char tentativas = 0;
   ledVerde.ligar();
-  taskPiscaLeds = TaskController.createTask(&piscaLeds, 500, 0, true);
-  TaskController.begin(1000); // tick @1ms (1000 us)
+  TaskController.ativaTask(idxTaskPiscaLeds, 0, 0);
   while(tentativas++ < 2)
     if(setup_ESP())
       break;
@@ -292,10 +355,9 @@ void setup() {
     ledVermelho.ligar();
     while(1);
   } else {
-    TaskController.desativaTask(taskPiscaLeds);
+    TaskController.desativaTask(idxTaskPiscaLeds);
     ledVerde.ligar();
     ledVermelho.desligar();
-    iniciaMaquinaEstados();
   }
 }
 

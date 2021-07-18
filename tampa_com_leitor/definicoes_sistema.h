@@ -1,7 +1,7 @@
 #ifndef DEFINICOES_SISTEMA_H_INCLUDED
 #define DEFINICOES_SISTEMA_H_INCLUDED
 
-#define MAX_TAREFAS 3
+#define MAX_TAREFAS 5
 
 // RESPOSTAS DA WEB
 #define SEM_RESPOSTA 0
@@ -23,7 +23,7 @@
 #define TAMPA_ABERTA     90
 #define TAMPA_FECHADA    180
 #define DELAY_TAMPA      2000
-#define DIST_ATIVA_ULTRA 5
+#define DIST_ATIVA_ULTRA 15
 
 // MAQUINA DE ESTADOS
 #define NUM_ESTADOS 3
@@ -39,7 +39,7 @@
 #define PRESENCA       0
 #define CODIGO         1
 #define SUCESSO        2
-#define TIMEOUT        3
+#define ERRO        3
 #define AUSENCIA       4
 
 // ACOES

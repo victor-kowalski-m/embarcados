@@ -16,9 +16,9 @@ class TaskSwitcher {
     public:
     TaskSwitcher();
     void begin(long timerInterruptInuSecs);
-    TaskControl *createTask(void (*t)(), int interval, char execucoes, bool ativa);
-    void ativaTask(TaskControl *task, int interval, char execucoes);
-    void desativaTask(TaskControl *task);
+    char createTask(void (*t)(), int interval, char execucoes, bool ativa);
+    void ativaTask(char idxTask, int interval, char execucoes);
+    void desativaTask(char idxTask);
     void runCurrentTask();
     void updateTickCounter();
 

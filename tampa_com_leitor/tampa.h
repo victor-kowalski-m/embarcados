@@ -11,7 +11,7 @@ class Tampa : public Servo {
     void abrir();
     void fechar();
     bool estaAberta();
-    bool passouDelay(long instante);
+    bool passouDelay();
 
   private:
     int pin;
