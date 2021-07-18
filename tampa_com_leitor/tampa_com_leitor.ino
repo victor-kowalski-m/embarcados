@@ -11,6 +11,7 @@
 
 char resposta_site[2];
 SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin); // rx tx
+// HardwareSerial & ESP8266 = Serial;
 boolean setup_ESP();
 void connect_webhost(char codigoDeBarras[]);
 
@@ -60,7 +61,9 @@ int executarAcao(int codigoAcao) {
         leitor.resetar();
         ledVerde.ligar(); 
         TaskController.ativaTask(idxTaskPiscaLeds, 200, 0);
-        connect_webhost(codigoDeBarras);         
+        tampa.detach();
+        connect_webhost(codigoDeBarras);
+        tampa.attach(SERVO_TAMPA);         
         TaskController.desativaTask(idxTaskPiscaLeds);
         ledVermelho.desligar();
         ledVerde.desligar();      
@@ -234,13 +237,18 @@ void setup() {
   char tentativas = 0;
   ledVerde.ligar();
   TaskController.ativaTask(idxTaskPiscaLeds, 0, 0);
+  // tampa.abrir();
+  // delay(500);
+  tampa.detach();
   while(tentativas++ < 2)
     if(setup_ESP())
       break;
   if (tentativas == 3){
+    TaskController.desativaTask(idxTaskPiscaLeds);
     ledVermelho.ligar();
     while(1);
   } else {
+    tampa.attach(SERVO_TAMPA);
     TaskController.desativaTask(idxTaskPiscaLeds);
     ledVerde.ligar();
     ledVermelho.desligar();

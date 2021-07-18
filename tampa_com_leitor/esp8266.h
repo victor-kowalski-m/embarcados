@@ -12,6 +12,7 @@ boolean connect_ESP();
 
 extern char resposta_site[2];
 extern SoftwareSerial ESP8266;
+// extern HardwareSerial & ESP8266; 
 extern void connect_webhost(char codigoDeBarras[]);
 
 #endif

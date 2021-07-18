@@ -14,6 +14,7 @@ void Tampa::setup(){
   aberta = true;
   instanteAbertura = 0;
   this->fechar();
+  delay(500);
 }
 
 void Tampa::abrir(){

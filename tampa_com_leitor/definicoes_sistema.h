@@ -21,7 +21,7 @@
 #define ESP8266_txPin    16
 
 // PARAMETROS NUMERICOS
-#define TAMPA_ABERTA     90
+#define TAMPA_ABERTA     70
 #define TAMPA_FECHADA    180
 #define DELAY_TAMPA      2000
 #define DIST_ATIVA_ULTRA 20
