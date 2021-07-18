@@ -4,6 +4,7 @@
 #include <hidboot.h>
 #include <usbhub.h>
 #include <Arduino.h>
+#include "definicoes_sistema.h"
 
 class Leitor : public KeyboardReportParser{
   public:
@@ -12,7 +13,6 @@ class Leitor : public KeyboardReportParser{
     void setup();
     void ler();  
     bool completouCodigo();
-    // char fimDoCodigo();
     void resetar();
 
   private:

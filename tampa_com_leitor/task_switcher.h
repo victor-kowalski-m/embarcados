@@ -4,8 +4,8 @@
 #include "definicoes_sistema.h"
 
 typedef struct {
-void (*task)();
-int          interval;
+void          (*task)();
+int           interval;
 long          current_time;
 bool          status;
 char          execucoes;

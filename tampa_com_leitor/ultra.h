@@ -2,6 +2,7 @@
 #define ULTRA_H_INCLUDED
 
 #include "sensor_presenca.h"
+#include "definicoes_sistema.h"
 
 class Ultra: public SensorPresenca {
   public:

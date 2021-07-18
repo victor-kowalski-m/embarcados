@@ -1,6 +1,8 @@
 #ifndef LED_H_INCLUDED
 #define LED_H_INCLUDED
 
+#include "definicoes_sistema.h"
+
 class Led {
   public:
     Led(int _pin);

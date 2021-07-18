@@ -1,61 +1,18 @@
 /*
-    ESP
+    LIXEIRA INTELIGENTE
 */
 
-#include <SoftwareSerial.h>
-#include "definicoes_sistema.h"
 #include "leitor.h"
 #include "ultra.h"
 #include "tampa.h"
 #include "led.h"
 #include "task_switcher.h"
+#include "esp8266.h"
 
-//SSID + KEY
-const char SSID_ESP[] = "DeMartins";
-const char SSID_KEY[] = "loja2512demartins";
-
-// URLs
-const char payload_opener[] = "GET /lixeira_decrementa/16/";
-
-//MODES
-const char CWMODE = '1';//CWMODE 1=STATION, 2=APMODE, 3=BOTH
-const char CIPMUX = '1';//CWMODE 0=Single Connection, 1=Multiple Connections
-
-//DEFINE ALL FUNCTIONS HERE
-boolean setup_ESP();
-boolean read_until_ESP(const char keyword1[], int key_size, int timeout_val, byte mode);
-void timeout_start();
-boolean timeout_check(int timeout_ms);
-void serial_dump_ESP();
-boolean connect_ESP();
-void connect_webhost();
-
-//DEFINE ALL GLOBAL VAARIABLES HERE
-unsigned long timeout_start_val;
-char scratch_data_from_ESP[20];//first byte is the length of bytes
-char payload[150];
-byte payload_size=0; //, counter=0;
-char ip_address[16];
-const char payload_closer[] = " HTTP/1.0\r\n\r\n";
 char resposta_site[2];
-
-//DEFINE KEYWORDS HERE
-const char keyword_OK[] = "OK";
-const char keyword_Ready[] = "Ready";
-const char keyword_no_change[] = "no change";
-const char keyword_blank[] = "#&";
-const char keyword_ip[] = "192.";
-const char keyword_rn[] = "\r\n";
-const char keyword_quote[] = "\"";
-const char keyword_carrot[] = ">";
-const char keyword_sendok[] = "SEND OK";
-const char keyword_linkdisc[] = "Unlink";
-const char keyword_doublehash[] = "##";
-
-
-/*
-    LIXEIRA INTELIGENTE
-*/
+SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin); // rx tx
+boolean setup_ESP();
+void connect_webhost(char codigoDeBarras[]);
 
 /***********************************************************************
  Estaticos
@@ -81,7 +38,6 @@ Ultra ultra(ECHO_PIN, TRIGGER_PIN, DIST_ATIVA_ULTRA);
 Tampa tampa(SERVO_TAMPA, TAMPA_ABERTA, TAMPA_FECHADA, DELAY_TAMPA);
 Led ledVerde(LED_VERDE);
 Led ledVermelho(LED_VERMELHO);
-SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin);// rx tx
 Leitor leitor(codigoDeBarras);
 
 
@@ -103,7 +59,7 @@ int executarAcao(int codigoAcao) {
         // inicia upload
         leitor.resetar();
         TaskController.ativaTask(idxTaskPiscaLeds, 200, 0);
-        connect_webhost();         
+        connect_webhost(codigoDeBarras);         
         TaskController.desativaTask(idxTaskPiscaLeds);
         ledVermelho.desligar();
         ledVerde.desligar();      
@@ -212,34 +168,34 @@ int obterEvento() {
 }
 
 
-void taskMaqEstados() {
-  if (eventoInterno != NENHUM_EVENTO) {
-      codigoEvento = eventoInterno;
-  }
-  if (codigoEvento != NENHUM_EVENTO)
-  {
-      codigoAcao = obterAcao(estado, codigoEvento);
-      estado = obterProximoEstado(estado, codigoEvento);
-      eventoInterno = executarAcao(codigoAcao);
-  }
-}
+// void taskMaqEstados() {
+//   if (eventoInterno != NENHUM_EVENTO) {
+//       codigoEvento = eventoInterno;
+//   }
+//   if (codigoEvento != NENHUM_EVENTO)
+//   {
+//       codigoAcao = obterAcao(estado, codigoEvento);
+//       estado = obterProximoEstado(estado, codigoEvento);
+//       eventoInterno = executarAcao(codigoAcao);
+//   }
+// }
 
-void taskObterEvento() {
-  codigoEvento = NENHUM_EVENTO;
+// void taskObterEvento() {
+//   codigoEvento = NENHUM_EVENTO;
 
-  if (ultra.algoProximo()) {
-    codigoEvento = PRESENCA;
-    return;
-  }
-  if (leitor.completouCodigo()) {
-    codigoEvento = CODIGO;
-    return;
-  }
-  if (tampa.passouDelay()) {
-    codigoEvento = AUSENCIA;
-    return;
-  }
-}
+//   if (ultra.algoProximo()) {
+//     codigoEvento = PRESENCA;
+//     return;
+//   }
+//   if (leitor.completouCodigo()) {
+//     codigoEvento = CODIGO;
+//     return;
+//   }
+//   if (tampa.passouDelay()) {
+//     codigoEvento = AUSENCIA;
+//     return;
+//   }
+// }
 
 void piscaLeds() {
   ledVerde.toggle();

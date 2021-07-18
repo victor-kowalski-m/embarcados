@@ -1,3 +1,30 @@
+#include <Arduino.h>
+#include "esp8266.h"
+
+const char SSID_ESP[] = "DeMartins";
+const char SSID_KEY[] = "loja2512demartins";
+const char payload_opener[] = "GET /lixeira_decrementa/16/";
+const char CWMODE = '1';
+const char CIPMUX = '1';
+unsigned long timeout_start_val;
+char scratch_data_from_ESP[20];
+char payload[150];
+byte payload_size=0;
+char ip_address[16]; 
+const char payload_closer[] = " HTTP/1.0\r\n\r\n";
+const char keyword_OK[] = "OK";
+const char keyword_Ready[] = "Ready";
+const char keyword_no_change[] = "no change";
+const char keyword_blank[] = "#&";
+const char keyword_ip[] = "192.";
+const char keyword_rn[] = "\r\n";
+const char keyword_quote[] = "\"";
+const char keyword_carrot[] = ">";
+const char keyword_sendok[] = "SEND OK";
+const char keyword_linkdisc[] = "Unlink";
+const char keyword_doublehash[] = "##";
+
+
 boolean setup_ESP(){//returns a '1' if successful
   
   ESP8266.print("AT\r\n");// Send just 'AT' to make sure the ESP is responding
@@ -207,7 +234,7 @@ boolean connect_ESP(){//returns 1 if successful or 0 if not
 }// VOID CONNECT FUNCTION
 
 
-void connect_webhost(){
+void connect_webhost(char codigoDeBarras[]){
 
   // This builds out the payload URL - not really needed here, but is very handy when adding different arrays to the payload
   char i;

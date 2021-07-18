@@ -2,6 +2,7 @@
 #define TAMPA_INCLUDED
 
 #include <Servo.h>
+#include "definicoes_sistema.h"
 
 class Tampa : public Servo {
   public:

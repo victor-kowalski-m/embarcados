@@ -20,13 +20,11 @@
 #define ESP8266_rxPin    15
 #define ESP8266_txPin    16
 
-//#define DEBUG_COMANDOS_AT true
-
 // PARAMETROS NUMERICOS
 #define TAMPA_ABERTA     90
 #define TAMPA_FECHADA    180
 #define DELAY_TAMPA      2000
-#define DIST_ATIVA_ULTRA 15
+#define DIST_ATIVA_ULTRA 20
 
 // MAQUINA DE ESTADOS
 #define NUM_ESTADOS 3
@@ -42,17 +40,17 @@
 #define PRESENCA       0
 #define CODIGO         1
 #define SUCESSO        2
-#define ERRO        3
+#define ERRO           3
 #define AUSENCIA       4
 
 // ACOES
 #define NENHUMA_ACAO -1
-#define A01  0
-#define A02  1
-#define A03  2
-#define A04  3
-#define A05  4
-#define A06  5
-#define A07  6
+#define A01           0
+#define A02           1
+#define A03           2
+#define A04           3
+#define A05           4
+#define A06           5
+#define A07           6
 
 #endif
