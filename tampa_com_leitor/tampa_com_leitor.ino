@@ -28,8 +28,8 @@ char codigoDeBarras[20];
 char idxTaskMaqEstados;
 char idxTaskObterEvento;
 char idxTaskPiscaLeds;
-char idxTaskMantemVerde;
-char idxTaskMantemVermelho;
+char idxTaskPiscaVerde;
+char idxTaskPiscaVermelho;
 
 /***********************************************************************
  Componentes
@@ -58,6 +58,7 @@ int executarAcao(int codigoAcao) {
     case A03:
         // inicia upload
         leitor.resetar();
+        ledVerde.ligar(); 
         TaskController.ativaTask(idxTaskPiscaLeds, 200, 0);
         connect_webhost(codigoDeBarras);         
         TaskController.desativaTask(idxTaskPiscaLeds);
@@ -75,11 +76,11 @@ int executarAcao(int codigoAcao) {
         break;
     case A05:
         // confirma upload
-        idxTaskMantemVerde = TaskController.createTask(&piscaVerde, 100, 20, true);
+        TaskController.ativaTask(idxTaskPiscaVerde, 100, 20);
         break;
     case A06:
         // erro no upload
-        idxTaskMantemVermelho = TaskController.createTask(&piscaVermelho, 100, 20, true);
+        TaskController.ativaTask(idxTaskPiscaVermelho, 100, 20);
         break;
     }
 
@@ -224,8 +225,8 @@ void setup() {
 //  idxTaskMaqEstados = TaskController.createTask(&taskMaqEstados, 200, 0, true);
 //  idxTaskObterEvento =TaskController.createTask(&taskObterEvento, 200, 0, true);
   idxTaskPiscaLeds = TaskController.createTask(&piscaLeds, 500, 0, false);
-  idxTaskMantemVerde = TaskController.createTask(&piscaVerde, 2000, 0, false);
-  idxTaskMantemVermelho = TaskController.createTask(&piscaVermelho, 2000, 0, false);
+  idxTaskPiscaVerde = TaskController.createTask(&piscaVerde, 2000, 0, false);
+  idxTaskPiscaVermelho = TaskController.createTask(&piscaVermelho, 2000, 0, false);
 
   iniciaMaquinaEstados();
   TaskController.begin(1000); // tick @1ms (1000 us)
