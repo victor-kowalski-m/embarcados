@@ -8,25 +8,27 @@
 #define WAIT  0
 
 typedef struct {
-void          (*task)();
-int           interval;
-long          current_time;
-bool          status;
-char          execucoes;
-bool          ativa;
+  void          (*task)();
+  int           interval;
+  long          current_time;
+  bool          status;
+  char          execucoes;
+  bool          ativa;
+  // void          (*inicioDaTask)();
+  // void          (*fimDaTask)();
 } TaskControl;
 
 class TaskSwitcher {
-    public:
+  public:
     TaskSwitcher();
     void begin(long timerInterruptInuSecs);
-    char createTask(void (*t)(), int interval, char execucoes, bool ativa);
+    char createTask(void (*t)(), int interval, char execucoes, bool ativa); //,  void (*inicio)(), void (*fim)());
     void ativaTask(char idxTask, int interval, char execucoes);
     void desativaTask(char idxTask);
     void runCurrentTask();
     void updateTickCounter();
 
-    private:
+  private:
     TaskControl taskList[MAX_TAREFAS];
     int taskCount;
 };

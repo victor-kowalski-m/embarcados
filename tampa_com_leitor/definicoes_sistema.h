@@ -33,22 +33,25 @@
 #define DIST_ATIVA_ULTRA 20
 
 // MAQUINA DE ESTADOS
-#define NUM_ESTADOS 3
-#define NUM_EVENTOS 7
+#define NUM_ESTADOS 5
+#define NUM_EVENTOS 8
 
 // ESTADOS
-#define CONEXAO  0
-#define ESPERA   1
-#define LEITURA  2
-#define UPLOAD   3
+#define SETUP        0
+#define DESCONECTADO 1
+#define ESPERA       2
+#define LEITURA      3
+#define UPLOAD       4
 
 // EVENTOS
 #define NENHUM_EVENTO -1
-#define PRESENCA       0
-#define CODIGO         1
-#define SUCESSO        2
-#define ERRO           3
-#define AUSENCIA       4
+#define TENTAR_CONEXAO 0
+#define PRESENCA       1
+#define CODIGO         2
+#define SUCESSO        3
+#define ERRO           4
+#define AUSENCIA       5
+#define SEM_INTERNET   6
 
 // ACOES
 #define NENHUMA_ACAO -1
@@ -59,5 +62,7 @@
 #define A05           4
 #define A06           5
 #define A07           6
+#define A08           7
+#define A09           8
 
 #endif

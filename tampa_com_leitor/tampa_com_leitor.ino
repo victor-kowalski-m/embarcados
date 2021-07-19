@@ -9,16 +9,17 @@
 #include "task_switcher.h"
 #include "esp8266.h"
 
-
 /***********************************************************************
  Estaticos
  ***********************************************************************/
-int codigoEvento = NENHUM_EVENTO;
-int eventoInterno = NENHUM_EVENTO;
-int estado = ESPERA;
+int codigoEvento;
+int eventoInterno;
+int estado;
 int codigoAcao;
 int acao_matrizTransicaoEstados[NUM_ESTADOS][NUM_EVENTOS];
 int proximo_estado_matrizTransicaoEstados[NUM_ESTADOS][NUM_EVENTOS];
+
+int tentativas_conexao;
 char codigoDeBarras[20];
 char resposta_site[2];
 
@@ -47,37 +48,56 @@ int executarAcao(int codigoAcao) {
 
     switch(codigoAcao)
     {
-    case A01:
-        tampa.abrir();
-        break;
-    case A02:
-        tampa.fechar();
-        break;
-    case A03: // inicia upload
-        leitor.resetar();
-        ledVerde.ligar(); 
-        TaskController.ativaTask(idxTaskPiscaLeds, 200, 0);
-        tampa.detach();
-        esp8266.fazRequest(codigoDeBarras);
-        tampa.attach(SERVO_TAMPA);         
-        TaskController.desativaTask(idxTaskPiscaLeds);
-        ledVermelho.desligar();
-        ledVerde.desligar();      
-        if ((resposta_site[1]-48) == DECREMENTOU){
-          retval = SUCESSO;
-        } else {
-          retval = ERRO;
-        }
-        break;
-    case A04: // ignora código lido
-        leitor.resetar();
-        break;
-    case A05: // indica sucesso no upload
-        TaskController.ativaTask(idxTaskPiscaVerde, 100, 20);
-        break;
-    case A06: // indica erro no upload
-        TaskController.ativaTask(idxTaskPiscaVermelho, 100, 20);
-        break;
+      // case A08: // tenta_conectar à rede
+      //     // ledVerde.ligar();
+      //     TaskController.ativaTask(idxTaskPiscaLeds, 500, 0);
+      //     tampa.detach();
+      //     if (tentativas_conexao++ < 1)
+      //       if(esp8266.conectaRede()) {
+      //         TaskController.desativaTask(idxTaskPiscaLeds);
+      //         tampa.attach(SERVO_TAMPA);
+      //         retval = SUCESSO;
+      //       } else {
+      //         retval = TENTAR_CONEXAO;
+      //     } else {
+      //       TaskController.desativaTask(idxTaskPiscaLeds);
+      //       retval = SEM_INTERNET;
+      //     }
+      //     break;
+      // case A09:
+      //     TaskController.ativaTask(idxTaskPiscaVermelho, 200, 0);
+      //     break;
+      case A01: // abre tampa
+          tampa.abrir();
+          break;
+      case A02: // fecha tampa
+          tampa.fechar();
+          break;
+      case A03: // inicia upload de codigo lido
+          leitor.resetar();
+          // ledVerde.ligar(); 
+          TaskController.ativaTask(idxTaskPiscaLeds, 100, 0);
+          tampa.detach();
+          esp8266.fazRequest(codigoDeBarras);
+          tampa.attach(SERVO_TAMPA);         
+          TaskController.desativaTask(idxTaskPiscaLeds);
+          // ledVermelho.desligar();
+          // ledVerde.desligar();      
+          if ((resposta_site[1]-48) == DECREMENTOU){
+            retval = SUCESSO;
+          } else {
+            retval = ERRO;
+          }
+          break;
+      case A04: // ignora código lido
+          leitor.resetar();
+          break;
+      case A05: // indica sucesso no upload
+          TaskController.ativaTask(idxTaskPiscaVerde, 100, 20);
+          break;
+      case A06: // indica erro no upload
+          TaskController.ativaTask(idxTaskPiscaVermelho, 100, 20);
+          break;
     }
 
     return retval;
@@ -95,7 +115,14 @@ void iniciaMaquinaEstados()
        proximo_estado_matrizTransicaoEstados[i][j] = i;
     }
   }
-  
+
+  // proximo_estado_matrizTransicaoEstados[SETUP][SUCESSO] = ESPERA;
+  // acao_matrizTransicaoEstados[SETUP][SUCESSO] = A05;
+  // acao_matrizTransicaoEstados[SETUP][TENTAR_CONEXAO] = A08;
+
+  // proximo_estado_matrizTransicaoEstados[SETUP][SEM_INTERNET] = DESCONECTADO;
+  // acao_matrizTransicaoEstados[SETUP][SEM_INTERNET] = A09;
+
   proximo_estado_matrizTransicaoEstados[ESPERA][PRESENCA] = LEITURA;
   acao_matrizTransicaoEstados[ESPERA ][PRESENCA] = A01;
   acao_matrizTransicaoEstados[LEITURA][PRESENCA] = A01;
@@ -163,9 +190,18 @@ int obterEvento() {
   return;
 }
 
+void iniciaSistema()
+{
+   iniciaMaquinaEstados();
+   estado = ESPERA;//SETUP;
+   eventoInterno = NENHUM_EVENTO; //TENTAR_CONEXAO;
+   tentativas_conexao = 0;
+} 
+
 void piscaLeds() {
   ledVerde.toggle();
-  ledVermelho.toggle();
+  if (ledVerde.estaAceso() == ledVermelho.estaAceso())
+    ledVermelho.toggle();
 }
 
 void piscaVerde() {
@@ -174,6 +210,15 @@ void piscaVerde() {
 
 void piscaVermelho() {
   ledVermelho.toggle();
+}
+
+void fimDaTaskLeds(){
+  ledVerde.desligar();
+  ledVermelho.desligar();
+}
+
+void inicioVazio(){
+  ;
 }
 
 void setup() {
@@ -185,12 +230,14 @@ void setup() {
   ledVermelho.setup();
   esp8266.setup();
 
-  idxTaskPiscaLeds = TaskController.createTask(&piscaLeds, 500, 0, false);
-  idxTaskPiscaVerde = TaskController.createTask(&piscaVerde, 2000, 0, false);
-  idxTaskPiscaVermelho = TaskController.createTask(&piscaVermelho, 2000, 0, false);
+  idxTaskPiscaLeds = TaskController.createTask(&piscaLeds, 500, 0, false); //, &inicioVazio, &fimDaTaskLeds);
+  idxTaskPiscaVerde = TaskController.createTask(&piscaVerde, 2000, 0, false); //, &inicioVazio, &fimDaTaskLeds);
+  idxTaskPiscaVermelho = TaskController.createTask(&piscaVermelho, 2000, 0, false); //, &inicioVazio, &fimDaTaskLeds);
 
-  iniciaMaquinaEstados();
   TaskController.begin(1000); // tick @1ms (1000 us)
+  iniciaSistema();
+
+  // iniciaMaquinaEstados();
   
   char tentativas = 0;
   ledVerde.ligar();
