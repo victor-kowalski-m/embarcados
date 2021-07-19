@@ -22,13 +22,13 @@ void TaskSwitcher::begin(long timerInterruptInuSecs) {
   interrupts();             // enable all interrupts
 }
 
-char TaskSwitcher::createTask(void (*t)(), int interval, char execucoes, bool ativa) { //, void (*inicio)(), void (*fim)()) {
-  taskList[taskCount++] = {t, interval, 0, READY, execucoes, ativa}; //, inicio, fim};
+char TaskSwitcher::createTask(void (*t)(), int interval, char execucoes, bool ativa, void (*inicio)(), void (*fim)()) {
+  taskList[taskCount++] = {t, interval, 0, READY, execucoes, ativa, inicio, fim};
   return (taskCount-1);
 }
 
 void TaskSwitcher::ativaTask(char idxTask, int interval, char execucoes) {
-  // void (*task)();
+  void (*task)();
   noInterrupts(); 
   taskList[idxTask].ativa = true;
   taskList[idxTask].status = READY;
@@ -37,8 +37,8 @@ void TaskSwitcher::ativaTask(char idxTask, int interval, char execucoes) {
     taskList[idxTask].interval = interval;
   }
   interrupts();
-  // task = taskList[idxTask].inicioDaTask;
-  // (*task)();
+  task = taskList[idxTask].inicioDaTask;
+  (*task)();
 }
 
 void TaskSwitcher::desativaTask(char idxTask) {
@@ -47,8 +47,8 @@ void TaskSwitcher::desativaTask(char idxTask) {
   taskList[idxTask].ativa = false;
   taskList[idxTask].status = WAIT;
   interrupts();
-  // task = taskList[idxTask].fimDaTask;
-  // (*task)();
+  task = taskList[idxTask].fimDaTask;
+  (*task)();
 }
     
 void TaskSwitcher::runCurrentTask() {
@@ -60,8 +60,11 @@ void TaskSwitcher::runCurrentTask() {
       if (taskList[i].execucoes != 0){
         if(--taskList[i].execucoes == 0){
           taskList[i].ativa = false;
-            // task = taskList[i].fimDaTask;
-            // (*task)();
+            taskList[i].status = WAIT;
+            taskList[i].current_time = 0;
+            task = taskList[i].fimDaTask;
+            (*task)();
+            continue;
         }
       }
       taskList[i].status = WAIT;

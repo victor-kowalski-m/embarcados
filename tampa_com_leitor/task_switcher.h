@@ -14,15 +14,15 @@ typedef struct {
   bool          status;
   char          execucoes;
   bool          ativa;
-  // void          (*inicioDaTask)();
-  // void          (*fimDaTask)();
+  void          (*inicioDaTask)();
+  void          (*fimDaTask)();
 } TaskControl;
 
 class TaskSwitcher {
   public:
     TaskSwitcher();
     void begin(long timerInterruptInuSecs);
-    char createTask(void (*t)(), int interval, char execucoes, bool ativa); //,  void (*inicio)(), void (*fim)());
+    char createTask(void (*t)(), int interval, char execucoes, bool ativa,  void (*inicio)(), void (*fim)());
     void ativaTask(char idxTask, int interval, char execucoes);
     void desativaTask(char idxTask);
     void runCurrentTask();
