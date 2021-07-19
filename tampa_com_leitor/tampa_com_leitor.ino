@@ -11,7 +11,8 @@
 
 char resposta_site[2];
 SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin); // rx tx
-// HardwareSerial & ESP8266 = Serial;
+// AltSoftSerial ESP8266;
+// HardwareSerial& ESP8266  = Serial;
 boolean setup_ESP();
 void connect_webhost(char codigoDeBarras[]);
 
@@ -154,13 +155,12 @@ void MaqEstados() {
 int obterEvento() {
 
   codigoEvento = NENHUM_EVENTO;
-
-  if (ultra.algoProximo()) {
-    codigoEvento = PRESENCA;
+    if (leitor.completouCodigo()) {
+    codigoEvento = CODIGO;
     return;
   }
-  if (leitor.completouCodigo()) {
-    codigoEvento = CODIGO;
+  if (ultra.algoProximo()) {
+    codigoEvento = PRESENCA;
     return;
   }
   if (tampa.passouDelay()) {

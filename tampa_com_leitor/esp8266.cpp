@@ -1,11 +1,7 @@
 #include <Arduino.h>
 #include "esp8266.h"
 
-const char SSID_ESP[] = "DeMartins";
-const char SSID_KEY[] = "loja2512demartins";
-const char payload_opener[] = "GET /lixeira_decrementa/16/";
-const char CWMODE = '1';
-const char CIPMUX = '1';
+const char payload_opener[] = REQUEST_SITE;
 unsigned long timeout_start_val;
 char scratch_data_from_ESP[20];
 char payload[150];
@@ -37,7 +33,7 @@ boolean setup_ESP(){//returns a '1' if successful
     ;
   serial_dump_ESP();//this just reads everything in the buffer and what's still coming from the ESP
 
-   ESP8266.print("AT+RST\r\n");// Give it a reset - who knows what condition it was in, better to start fresh
+  ESP8266.print("AT+RST\r\n");// Give it a reset - who knows what condition it was in, better to start fresh
   if(read_until_ESP(keyword_Ready,sizeof(keyword_Ready),5000,0))//go look for keyword "Ready" - takes a few seconds longer to complete
     //##Serial.println("ESP RESET OK");//depneding on the FW version on the ESP, sometimes the Ready is with a lowercase r - ready
     ;
@@ -46,9 +42,9 @@ boolean setup_ESP(){//returns a '1' if successful
     ; 
   serial_dump_ESP();
   
-   ESP8266.print("AT+CWMODE=");// set the CWMODE
-   ESP8266.print(CWMODE);//just send what is set in the constant
-   ESP8266.print("\r\n");
+  ESP8266.print("AT+CWMODE=");// set the CWMODE
+  ESP8266.print(CWMODE);//just send what is set in the constant
+  ESP8266.print("\r\n");
   if(read_until_ESP(keyword_OK,sizeof(keyword_OK),1000,0))//go look for keyword "OK"
     //##Serial.println("ESP CWMODE SET");
     ;
@@ -59,9 +55,9 @@ boolean setup_ESP(){//returns a '1' if successful
    
    //Here's where the SSID and PW are set
    ESP8266.print("AT+CWJAP=\"");// set the SSID AT+CWJAP="SSID","PW"
-   ESP8266.print(SSID_ESP);//from constant 
+   ESP8266.print(SSID);//from constant 
    ESP8266.print("\",\"");
-   ESP8266.print(SSID_KEY);//form constant
+   ESP8266.print(SENHA);//form constant
    ESP8266.print("\"\r\n");
   if(read_until_ESP(keyword_OK,sizeof(keyword_OK),10000,0))//go look for keyword "OK"
     //##Serial.println("ESP SSID SET OK");
@@ -75,27 +71,28 @@ boolean setup_ESP(){//returns a '1' if successful
   //##Serial.println("CHECKING FOR AN IP ADDRESS");
   ESP8266.print("AT+CIFSR\r\n");//command to retrieve IP address from ESP
   if(read_until_ESP(keyword_rn,sizeof(keyword_rn),10000,0)){//look for first \r\n after AT+CIFSR echo - note mode is '0', the ip address is right after this
-  if(read_until_ESP(keyword_rn,sizeof(keyword_rn),1000,1)){//look for second \r\n, and store everything it receives, mode='1'
-    //store the ip adress in its variable, ip_address[]
-    for(int i=1; i<=(scratch_data_from_ESP[0]-sizeof(keyword_rn)+1); i++)//that i<=... is going to take some explaining, see next lines
-       ip_address[i] = scratch_data_from_ESP[i];//fill up ip_address with the scratch data received
-//i=1 because i=0 is the length of the data found between the two keywords, BUT this includes the length of the second keyword, so i<= to the length minus
-//size of teh keyword, but remember, sizeof() will return one extra, which is going to be subtracted, so I just added it back in +1
-    ip_address[0] = (scratch_data_from_ESP[0]-sizeof(keyword_rn)+1);//store the length of ip_address in [0], same thing as before
-    //##Serial.print("IP ADDRESS = ");//print it off to verify
-    for(int i=1; i<=ip_address[0]; i++)//send out the ip address
-    //##Serial.print(ip_address[i]);
-    //##Serial.println("");
-    ;
-  }}//if first \r\n
+    if(read_until_ESP(keyword_rn,sizeof(keyword_rn),1000,1)){//look for second \r\n, and store everything it receives, mode='1'
+      //store the ip adress in its variable, ip_address[]
+      for(int i=1; i<=(scratch_data_from_ESP[0]-sizeof(keyword_rn)+1); i++)//that i<=... is going to take some explaining, see next lines
+        ip_address[i] = scratch_data_from_ESP[i];//fill up ip_address with the scratch data received
+        //i=1 because i=0 is the length of the data found between the two keywords, BUT this includes the length of the second keyword, so i<= to the length minus
+        //size of teh keyword, but remember, sizeof() will return one extra, which is going to be subtracted, so I just added it back in +1
+      ip_address[0] = (scratch_data_from_ESP[0]-sizeof(keyword_rn)+1);//store the length of ip_address in [0], same thing as before
+      //##Serial.print("IP ADDRESS = ");//print it off to verify
+      for(int i=1; i<=ip_address[0]; i++)//send out the ip address
+      //##Serial.print(ip_address[i]);
+      //##Serial.println("");
+      ;
+    }
+  }//if first \r\n
   else
   //##Serial.print("IP ADDRESS FAIL");
   ;
   serial_dump_ESP();
   
-   ESP8266.print("AT+CIPMUX=");// set the CIPMUX
-   ESP8266.print(CIPMUX);//from constant
-   ESP8266.print("\r\n");
+  ESP8266.print("AT+CIPMUX=");// set the CIPMUX
+  ESP8266.print(CIPMUX);//from constant
+  ESP8266.print("\r\n");
   if(read_until_ESP(keyword_OK,sizeof(keyword_OK),5000,0)){//go look for keyword "OK" or "no change 
     //##Serial.println("ESP CIPMUX SET");
     ;
@@ -132,16 +129,15 @@ boolean read_until_ESP(const char keyword1[], int key_size, int timeout_val, byt
   int scratch_length=1;//the length of the scratch data array
   key_size--;//since we're going to get an extra charachter from the sizeof()
  
- //FILL UP THE BUFFER
- for(byte i=0; i<key_size; i++){//we only need a buffer as long as the keyword
-  
-            //timing control
-            while(!ESP8266.available()){//wait until a new byte is sent down from the ESP - good way to keep in lock-step with the serial port
-              if((millis()-timeout_start_val)>timeout_val){//if nothing happens within the timeout period, get out of here
-                //##Serial.println("timeout");
-                return 0;//this will end the function
-              }//timeout
-            }// while !avail
+  //FILL UP THE BUFFER
+  for(byte i=0; i<key_size; i++){//we only need a buffer as long as the keyword
+    //timing control
+    while(!ESP8266.available()){//wait until a new byte is sent down from the ESP - good way to keep in lock-step with the serial port
+      if((millis()-timeout_start_val)>timeout_val){//if nothing happens within the timeout period, get out of here
+        //##Serial.println("timeout");
+        return 0;//this will end the function
+      }//timeout
+    }// while !avail
    
     data_in[i]=ESP8266.read();// save the byte to the buffer 'data_in[]
     //Serial.write(data_in[i]);
@@ -159,17 +155,17 @@ boolean read_until_ESP(const char keyword1[], int key_size, int timeout_val, byt
      //run through the entire buffer and look for the keyword
      //this check is here, just in case the first thing out of the ESP was the keyword, meaning the buffer was actually filled with the keyword
      for(byte i=0; i<key_size; i++){
-       if(keyword1[i]!=data_in[i])//if it doesn't match, break out of the search now
-       break;//get outta here
-       if(i==(key_size-1)){//we got all the way through the keyword without breaking, must be a match!
-       return 1; //return a 1 and get outta here!
-       }//if
+        if(keyword1[i]!=data_in[i])//if it doesn't match, break out of the search now
+          break;//get outta here
+        if(i==(key_size-1)){//we got all the way through the keyword without breaking, must be a match!
+          return 1; //return a 1 and get outta here!
+        }//if
      }//for byte i
      
     //start rolling the buffer
     for(byte i=0; i<(key_size-1); i++){// keysize-1 because everthing is shifted over - see next line
       data_in[i]=data_in[i+1];// so the data at 0 becomes the data at 1, and so on.... the last value is where we'll put the new data
-  }//for 
+    }//for 
          
    //timing control
     while(!ESP8266.available()){// same thing as done in the buffer
@@ -199,7 +195,9 @@ boolean read_until_ESP(const char keyword1[], int key_size, int timeout_val, byt
 boolean connect_ESP(){//returns 1 if successful or 0 if not
 
   //##Serial.println("CONNECTING");
-  ESP8266.print("AT+CIPSTART=0,\"TCP\",\"192.168.0.25\",8080\r\n");//connect to your web server
+  ESP8266.print("AT+CIPSTART=0,\"TCP\",\"");
+  ESP8266.print(IP_SERVER);
+  ESP8266.print("\",8080\r\n");//connect to your web server
   //read_until_ESP(keyword,size of the keyword,timeout in ms, data save 0-no 1-yes 'more on this later') 
   if(read_until_ESP(keyword_OK,sizeof(keyword_OK),5000,0)){//go look for 'OK' and come back
   serial_dump_ESP();//get rid of whatever else is coming

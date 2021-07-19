@@ -3,6 +3,12 @@
 
 #define MAX_TAREFAS 5
 
+// CONFIGURAÇÕES DE REDE
+#define SSID "DeMartins"
+#define SENHA "loja2512demartins"
+#define IP_SERVER "192.168.0.10"
+#define REQUEST_SITE "GET /lixeira_decrementa/16/"
+
 // RESPOSTAS DA WEB
 #define SEM_RESPOSTA 0
 #define DECREMENTOU 1
