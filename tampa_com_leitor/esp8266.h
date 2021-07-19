@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-// #include <AltSoftSerial.h>
 #include "definicoes_sistema.h"
 
 #define CWMODE '1'
@@ -17,8 +16,6 @@ boolean connect_ESP();
 
 extern char resposta_site[2];
 extern SoftwareSerial ESP8266;
-// extern AltSoftSerial ESP8266;
-// extern HardwareSerial& ESP8266; 
 extern void connect_webhost(char codigoDeBarras[]);
 
 #endif

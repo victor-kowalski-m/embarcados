@@ -9,10 +9,6 @@
 #include "task_switcher.h"
 #include "esp8266.h"
 
-char resposta_site[2];
-SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin); // rx tx
-// AltSoftSerial ESP8266;
-// HardwareSerial& ESP8266  = Serial;
 boolean setup_ESP();
 void connect_webhost(char codigoDeBarras[]);
 
@@ -26,6 +22,7 @@ int codigoAcao;
 int acao_matrizTransicaoEstados[NUM_ESTADOS][NUM_EVENTOS];
 int proximo_estado_matrizTransicaoEstados[NUM_ESTADOS][NUM_EVENTOS];
 char codigoDeBarras[20];
+char resposta_site[2];
 
 char idxTaskMaqEstados;
 char idxTaskObterEvento;
@@ -41,6 +38,7 @@ Tampa tampa(SERVO_TAMPA, TAMPA_ABERTA, TAMPA_FECHADA, DELAY_TAMPA);
 Led ledVerde(LED_VERDE);
 Led ledVermelho(LED_VERMELHO);
 Leitor leitor(codigoDeBarras);
+SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin);
 
 
 int executarAcao(int codigoAcao) {
@@ -57,8 +55,7 @@ int executarAcao(int codigoAcao) {
     case A02:
         tampa.fechar();
         break;
-    case A03:
-        // inicia upload
+    case A03: // inicia upload
         leitor.resetar();
         ledVerde.ligar(); 
         TaskController.ativaTask(idxTaskPiscaLeds, 200, 0);
@@ -74,22 +71,19 @@ int executarAcao(int codigoAcao) {
           retval = ERRO;
         }
         break;
-    case A04:
-        // ignora código lido
+    case A04: // ignora código lido
         leitor.resetar();
         break;
-    case A05:
-        // confirma upload
+    case A05: // indica sucesso no upload
         TaskController.ativaTask(idxTaskPiscaVerde, 100, 20);
         break;
-    case A06:
-        // erro no upload
+    case A06: // indica erro no upload
         TaskController.ativaTask(idxTaskPiscaVermelho, 100, 20);
         break;
     }
 
     return retval;
-} // executarAcao
+}
 
 
 void iniciaMaquinaEstados()
@@ -129,12 +123,12 @@ void iniciaMaquinaEstados()
 
 int obterAcao(int estado, int codigoEvento) {
   return acao_matrizTransicaoEstados[estado][codigoEvento];
-} // obterAcao
+}
 
 
 int obterProximoEstado(int estado, int codigoEvento) {
   return proximo_estado_matrizTransicaoEstados[estado][codigoEvento];
-} // obterAcao
+}
 
 
 void MaqEstados() {
@@ -171,36 +165,6 @@ int obterEvento() {
   return;
 }
 
-
-// void taskMaqEstados() {
-//   if (eventoInterno != NENHUM_EVENTO) {
-//       codigoEvento = eventoInterno;
-//   }
-//   if (codigoEvento != NENHUM_EVENTO)
-//   {
-//       codigoAcao = obterAcao(estado, codigoEvento);
-//       estado = obterProximoEstado(estado, codigoEvento);
-//       eventoInterno = executarAcao(codigoAcao);
-//   }
-// }
-
-// void taskObterEvento() {
-//   codigoEvento = NENHUM_EVENTO;
-
-//   if (ultra.algoProximo()) {
-//     codigoEvento = PRESENCA;
-//     return;
-//   }
-//   if (leitor.completouCodigo()) {
-//     codigoEvento = CODIGO;
-//     return;
-//   }
-//   if (tampa.passouDelay()) {
-//     codigoEvento = AUSENCIA;
-//     return;
-//   }
-// }
-
 void piscaLeds() {
   ledVerde.toggle();
   ledVermelho.toggle();
@@ -217,7 +181,7 @@ void piscaVermelho() {
 void setup() {
   pinMode(ESP8266_rxPin, INPUT);
   pinMode(ESP8266_txPin, OUTPUT);
-  ESP8266.begin(9600);//default baudrate for ESP
+  ESP8266.begin(9600);
 
   leitor.setup();
   ultra.setup();
@@ -225,8 +189,6 @@ void setup() {
   ledVerde.setup();
   ledVermelho.setup();
 
-//  idxTaskMaqEstados = TaskController.createTask(&taskMaqEstados, 200, 0, true);
-//  idxTaskObterEvento =TaskController.createTask(&taskObterEvento, 200, 0, true);
   idxTaskPiscaLeds = TaskController.createTask(&piscaLeds, 500, 0, false);
   idxTaskPiscaVerde = TaskController.createTask(&piscaVerde, 2000, 0, false);
   idxTaskPiscaVermelho = TaskController.createTask(&piscaVermelho, 2000, 0, false);
@@ -237,8 +199,6 @@ void setup() {
   char tentativas = 0;
   ledVerde.ligar();
   TaskController.ativaTask(idxTaskPiscaLeds, 0, 0);
-  // tampa.abrir();
-  // delay(500);
   tampa.detach();
   while(tentativas++ < 2)
     if(setup_ESP())

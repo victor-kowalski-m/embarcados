@@ -3,6 +3,9 @@
 
 #include "definicoes_sistema.h"
 
+#define READY 1
+#define WAIT  0
+
 typedef struct {
 void          (*task)();
 int           interval;
@@ -29,4 +32,4 @@ class TaskSwitcher {
 
 extern TaskSwitcher TaskController;
 
-#endif // TASK_SWITCHER_H_INCLUDED
+#endif

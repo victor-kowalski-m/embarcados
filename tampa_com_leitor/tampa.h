@@ -2,7 +2,6 @@
 #define TAMPA_INCLUDED
 
 #include <Servo.h>
-// #include "ServoTimer2.h"
 #include "definicoes_sistema.h"
 
 class Tampa : public Servo { //Servo {
