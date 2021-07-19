@@ -1,6 +1,7 @@
 #ifndef TASK_SWITCHER_H_INCLUDED
 #define TASK_SWITCHER_H_INCLUDED
 
+#include <Arduino.h>
 #include "definicoes_sistema.h"
 
 #define READY 1

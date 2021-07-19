@@ -9,8 +9,6 @@
 #include "task_switcher.h"
 #include "esp8266.h"
 
-boolean setup_ESP();
-void connect_webhost(char codigoDeBarras[]);
 
 /***********************************************************************
  Estaticos
@@ -38,7 +36,7 @@ Tampa tampa(SERVO_TAMPA, TAMPA_ABERTA, TAMPA_FECHADA, DELAY_TAMPA);
 Led ledVerde(LED_VERDE);
 Led ledVermelho(LED_VERMELHO);
 Leitor leitor(codigoDeBarras);
-SoftwareSerial ESP8266(ESP8266_rxPin, ESP8266_txPin);
+ESP8266 esp8266(ESP8266_rxPin, ESP8266_txPin);
 
 
 int executarAcao(int codigoAcao) {
@@ -60,7 +58,7 @@ int executarAcao(int codigoAcao) {
         ledVerde.ligar(); 
         TaskController.ativaTask(idxTaskPiscaLeds, 200, 0);
         tampa.detach();
-        connect_webhost(codigoDeBarras);
+        esp8266.fazRequest(codigoDeBarras);
         tampa.attach(SERVO_TAMPA);         
         TaskController.desativaTask(idxTaskPiscaLeds);
         ledVermelho.desligar();
@@ -97,7 +95,7 @@ void iniciaMaquinaEstados()
        proximo_estado_matrizTransicaoEstados[i][j] = i;
     }
   }
-
+  
   proximo_estado_matrizTransicaoEstados[ESPERA][PRESENCA] = LEITURA;
   acao_matrizTransicaoEstados[ESPERA ][PRESENCA] = A01;
   acao_matrizTransicaoEstados[LEITURA][PRESENCA] = A01;
@@ -143,8 +141,8 @@ void MaqEstados() {
       estado = obterProximoEstado(estado, codigoEvento);
       eventoInterno = executarAcao(codigoAcao);
   }
-
 }
+
 
 int obterEvento() {
 
@@ -179,15 +177,13 @@ void piscaVermelho() {
 }
 
 void setup() {
-  pinMode(ESP8266_rxPin, INPUT);
-  pinMode(ESP8266_txPin, OUTPUT);
-  ESP8266.begin(9600);
 
   leitor.setup();
   ultra.setup();
   tampa.setup();
   ledVerde.setup();
   ledVermelho.setup();
+  esp8266.setup();
 
   idxTaskPiscaLeds = TaskController.createTask(&piscaLeds, 500, 0, false);
   idxTaskPiscaVerde = TaskController.createTask(&piscaVerde, 2000, 0, false);
@@ -201,7 +197,7 @@ void setup() {
   TaskController.ativaTask(idxTaskPiscaLeds, 0, 0);
   tampa.detach();
   while(tentativas++ < 2)
-    if(setup_ESP())
+    if(esp8266.conectaRede())
       break;
   if (tentativas == 3){
     TaskController.desativaTask(idxTaskPiscaLeds);

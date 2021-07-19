@@ -37,9 +37,10 @@
 #define NUM_EVENTOS 7
 
 // ESTADOS
-#define ESPERA   0
-#define LEITURA  1
-#define UPLOAD   2
+#define CONEXAO  0
+#define ESPERA   1
+#define LEITURA  2
+#define UPLOAD   3
 
 // EVENTOS
 #define NENHUM_EVENTO -1

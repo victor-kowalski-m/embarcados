@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "task_switcher.h"
 
 TaskSwitcher::TaskSwitcher() : taskCount(0) {
