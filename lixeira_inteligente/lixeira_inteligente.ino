@@ -81,6 +81,9 @@ void iniciaMaquinaEstados()
   proximo_estado_matrizTransicaoEstados[UPLOAD][ERRO] = LEITURA;
   acao_matrizTransicaoEstados[UPLOAD][ERRO] = A06;
 
+  proximo_estado_matrizTransicaoEstados[UPLOAD][TENTAR_CONEXAO] = SETUP;
+  acao_matrizTransicaoEstados[UPLOAD][TENTAR_CONEXAO] = A07;
+
   proximo_estado_matrizTransicaoEstados[LEITURA][AUSENCIA] = ESPERA;
   acao_matrizTransicaoEstados[LEITURA][AUSENCIA] = A02;
   acao_matrizTransicaoEstados[UPLOAD ][AUSENCIA] = A02;
@@ -96,51 +99,55 @@ int executarAcao(int codigoAcao) {
     switch(codigoAcao)
     {
       case A07: // tenta conectar à rede
-          TaskController.ativaTask(idxTaskPiscaLeds, 500, 0);
-          tampa.detach();
-          if (tentativas_conexao++ < 3)
-            if(esp8266.conectaRede()) {
-              TaskController.desativaTask(idxTaskPiscaLeds);
-              tampa.attach(SERVO_TAMPA);
-              retval = SUCESSO;
-            } else {
-              retval = TENTAR_CONEXAO;
-          } else {
+        TaskController.ativaTask(idxTaskPiscaLeds, 500, 0);
+        tampa.detach();
+        if (tentativas_conexao++ < 3)
+          if(esp8266.conectaRede()) {
             TaskController.desativaTask(idxTaskPiscaLeds);
-            retval = SEM_INTERNET;
-          }
-          break;
+            tampa.attach(SERVO_TAMPA);
+            tentativas_conexao = 0;
+            retval = SUCESSO;
+          } else {
+            retval = TENTAR_CONEXAO;
+        } else {
+          TaskController.desativaTask(idxTaskPiscaLeds);
+          retval = SEM_INTERNET;
+        }
+        break;
       case A08: // pisca led vermelho eternamente
-          TaskController.ativaTask(idxTaskPiscaVermelho, 200, 0);
-          break;
+        TaskController.ativaTask(idxTaskPiscaVermelho, 200, 0);
+        break;
       case A01: // abre tampa
-          tampa.abrir();
-          break;
+        tampa.abrir();
+        break;
       case A02: // fecha tampa
-          tampa.fechar();
-          break;
+        tampa.fechar();
+        break;
       case A03: // inicia upload de codigo lido
-          leitor.resetar();
-          TaskController.ativaTask(idxTaskPiscaLeds, 100, 0);
-          tampa.detach();
-          esp8266.fazRequest(codigoDeBarras);
-          tampa.attach(SERVO_TAMPA);         
-          TaskController.desativaTask(idxTaskPiscaLeds);     
+        TaskController.ativaTask(idxTaskPiscaLeds, 100, 0);
+        tampa.detach();
+        if(esp8266.fazRequest(codigoDeBarras)){            
           if ((resposta_site[1]-48) == DECREMENTOU){
             retval = SUCESSO;
           } else {
             retval = ERRO;
           }
-          break;
+        } else { // se não obtém resposta do site
+          retval = TENTAR_CONEXAO;
+        }
+        TaskController.desativaTask(idxTaskPiscaLeds);  
+        tampa.attach(SERVO_TAMPA);
+        leitor.resetar();
+        break;
       case A04: // ignora código lido
-          leitor.resetar();
-          break;
+        leitor.resetar();
+        break;
       case A05: // indica sucesso no setup/upload
-          TaskController.ativaTask(idxTaskPiscaVerde, 100, 20);
-          break;
+        TaskController.ativaTask(idxTaskPiscaVerde, 100, 20);
+        break;
       case A06: // indica erro no setup/upload
-          TaskController.ativaTask(idxTaskPiscaVermelho, 100, 20);
-          break;
+        TaskController.ativaTask(idxTaskPiscaVermelho, 100, 20);
+        break;
     }
 
     return retval;
@@ -194,7 +201,6 @@ void MaqEstados() {
 void iniciaSistema()
 {
   iniciaMaquinaEstados();
-  TaskController.begin(1000); // tick @1ms (1000 us)
   estado = SETUP;
   eventoInterno = TENTAR_CONEXAO;
   tentativas_conexao = 0;
@@ -247,6 +253,7 @@ void setup() {
   idxTaskPiscaLeds = TaskController.createTask(&piscaLeds, 500, 0, false, &inicioVazio, &fimDaTaskLeds);
   idxTaskPiscaVerde = TaskController.createTask(&piscaVerde, 2000, 0, false, &inicioVazio, &fimDaTaskLeds);
   idxTaskPiscaVermelho = TaskController.createTask(&piscaVermelho, 2000, 0, false, &inicioVazio, &fimDaTaskLeds);
+  TaskController.begin(1000); // tick @1ms (1000 us)
 
   iniciaSistema();
 

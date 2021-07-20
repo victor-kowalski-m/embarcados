@@ -12,11 +12,11 @@ class ESP8266: public ModuloWifi {
   public:
     ESP8266(int RX_PIN, int TX_PIN);
     void setup();
-    boolean conectaRede();
-    boolean buscaTrecho(const char keyword1[], int key_size, int timeout_val, byte mode);
+    bool conectaRede();
+    bool buscaTrecho(const char keyword1[], int key_size, int timeout_val, byte mode);
     void limpaSerial();
-    boolean conectaServer();
-    void fazRequest(char codigoDeBarras[]);
+    bool conectaServer();
+    bool fazRequest(char codigoDeBarras[]);
 
     SoftwareSerial Serial;
 

@@ -4,9 +4,9 @@
 class ModuloWifi {
   public:
     void setup();
-    boolean conectaRede();
-    boolean conectaServer();
-    void fazRequest(char codigoDeBarras[]);
+    bool conectaRede();
+    bool conectaServer();
+    bool fazRequest(char codigoDeBarras[]);
 };
 
 #endif

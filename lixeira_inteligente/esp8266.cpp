@@ -22,7 +22,7 @@ void ESP8266::setup(){
   Serial.begin(9600);
 }
 
-boolean ESP8266::conectaRede(){
+bool ESP8266::conectaRede(){
   
   Serial.print("AT\r\n");
   if(this->buscaTrecho(keyword_OK,sizeof(keyword_OK),5000,0))
@@ -99,7 +99,7 @@ void ESP8266::limpaSerial(){
 }
 
 
-boolean ESP8266::buscaTrecho(const char keyword1[], int key_size, int timeout_val, byte mode){
+bool ESP8266::buscaTrecho(const char keyword1[], int key_size, int timeout_val, byte mode){
   timeout_start_val=millis();
   char data_in[20];
   int scratch_length=1;
@@ -155,7 +155,7 @@ boolean ESP8266::buscaTrecho(const char keyword1[], int key_size, int timeout_va
 }
 
 
-boolean ESP8266::conectaServer(){
+bool ESP8266::conectaServer(){
 
   //##Serial.println("CONNECTING");
   Serial.print("AT+CIPSTART=0,\"TCP\",\"");
@@ -176,7 +176,7 @@ boolean ESP8266::conectaServer(){
       
       if(this->buscaTrecho(keyword_sendok,sizeof(keyword_sendok),5000,0)){
         //##Serial.println("SENT");
-        return 1;
+        return true;
       }
       else
         ;//##Serial.println("FAILED TO SEND");       
@@ -184,15 +184,15 @@ boolean ESP8266::conectaServer(){
     else
       ;//##Serial.println("FAILED TO GET >");
   }
-  else{
+  else {
     //##Serial.println("FAILED TO CONNECT");
-    this->conectaRede();
   }
+  return false;
 
 }
 
 
-void ESP8266::fazRequest(char codigoDeBarras[]){
+bool ESP8266::fazRequest(char codigoDeBarras[]){
 
   char i;
   payload_size=0;
@@ -210,7 +210,6 @@ void ESP8266::fazRequest(char codigoDeBarras[]){
 
     if(this->buscaTrecho(keyword_doublehash,sizeof(keyword_doublehash),5000,0)){
       if(this->buscaTrecho(keyword_doublehash,sizeof(keyword_doublehash),5000,1)){
-        //got our data, so quickly store it away in d1
         for(int i=1; i<=(scratch_data_from_ESP[0]-sizeof(keyword_doublehash)+1); i++)
           resposta_site[i] = scratch_data_from_ESP[i];
         resposta_site[0] = (scratch_data_from_ESP[0]-sizeof(keyword_doublehash)+1);
@@ -219,14 +218,11 @@ void ESP8266::fazRequest(char codigoDeBarras[]){
           //##Serial.println("FOUND DATA & DISCONNECTED");
           this->limpaSerial();
           
-          //##Serial.print("Resposta: ");
-          for(int i=1; i<=resposta_site[0]; i++){
-          //##Serial.print(resposta_site[i]);
-          }     
-          //##Serial.println("");
-
+          return true;
+          
         } 
       }
     }
   }
+  return false;
 }
