@@ -1,9 +1,9 @@
 #ifndef TAMPA_INCLUDED
 #define TAMPA_INCLUDED
 
-#include <Servo.h>
-#include "atuador_tampa.h"
 #include "definicoes_sistema.h"
+#include "atuador_tampa.h"
+#include <Servo.h>
 
 class ServoTampa : public AtuadorTampa, public Servo { //Servo {
   public:

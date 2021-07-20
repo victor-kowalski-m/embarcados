@@ -8,7 +8,6 @@ class AtuadorTampa {
     virtual void fechar();
     virtual bool estaAberta();
     virtual bool passouDelay();
-
 };
 
 #endif

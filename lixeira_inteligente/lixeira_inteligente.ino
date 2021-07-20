@@ -9,9 +9,11 @@
 #include "task_switcher.h"
 #include "esp8266.h"
 
+
 /***********************************************************************
  Estaticos
  ***********************************************************************/
+
 int codigoEvento;
 int eventoInterno;
 int estado;
@@ -23,22 +25,21 @@ int tentativas_conexao;
 char codigoDeBarras[20];
 char resposta_site[2];
 
-char idxTaskMaqEstados;
-char idxTaskObterEvento;
 char idxTaskPiscaLeds;
 char idxTaskPiscaVerde;
 char idxTaskPiscaVermelho;
 
+
 /***********************************************************************
  Componentes
  ***********************************************************************/
+
 Ultra ultra(ECHO_PIN, TRIGGER_PIN, DIST_ATIVA_ULTRA);
 ServoTampa tampa(SERVO_TAMPA, TAMPA_ABERTA, TAMPA_FECHADA, DELAY_TAMPA);
 Led ledVerde(LED_VERDE);
 Led ledVermelho(LED_VERMELHO);
 LeitorUSB leitor(codigoDeBarras);
 ESP8266 esp8266(ESP8266_rxPin, ESP8266_txPin);
-
 
 
 /***********************************************************************
@@ -59,10 +60,10 @@ void iniciaMaquinaEstados()
 
   proximo_estado_matrizTransicaoEstados[SETUP][SUCESSO] = ESPERA;
   acao_matrizTransicaoEstados[SETUP][SUCESSO] = A05;
-  acao_matrizTransicaoEstados[SETUP][TENTAR_CONEXAO] = A08;
+  acao_matrizTransicaoEstados[SETUP][TENTAR_CONEXAO] = A07;
 
   proximo_estado_matrizTransicaoEstados[SETUP][SEM_INTERNET] = DESCONECTADO;
-  acao_matrizTransicaoEstados[SETUP][SEM_INTERNET] = A09;
+  acao_matrizTransicaoEstados[SETUP][SEM_INTERNET] = A08;
 
   proximo_estado_matrizTransicaoEstados[ESPERA][PRESENCA] = LEITURA;
   acao_matrizTransicaoEstados[ESPERA ][PRESENCA] = A01;
@@ -94,7 +95,7 @@ int executarAcao(int codigoAcao) {
 
     switch(codigoAcao)
     {
-      case A08: // tenta conectar à rede
+      case A07: // tenta conectar à rede
           TaskController.ativaTask(idxTaskPiscaLeds, 500, 0);
           tampa.detach();
           if (tentativas_conexao++ < 3)
@@ -109,7 +110,7 @@ int executarAcao(int codigoAcao) {
             retval = SEM_INTERNET;
           }
           break;
-      case A09: // pisca led vermelho eternamente
+      case A08: // pisca led vermelho eternamente
           TaskController.ativaTask(idxTaskPiscaVermelho, 200, 0);
           break;
       case A01: // abre tampa
@@ -144,6 +145,7 @@ int executarAcao(int codigoAcao) {
 
     return retval;
 }
+
 
 void obterEvento() {
   codigoEvento = NENHUM_EVENTO;
@@ -228,6 +230,10 @@ void fimDaTaskLeds(){
 
 void inicioVazio(){}
 
+
+/***********************************************************************
+ Setup e Loop
+ ***********************************************************************/
 
 void setup() {
 

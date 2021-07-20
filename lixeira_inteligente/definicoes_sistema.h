@@ -1,6 +1,8 @@
 #ifndef DEFINICOES_SISTEMA_H_INCLUDED
 #define DEFINICOES_SISTEMA_H_INCLUDED
 
+#include <Arduino.h>
+
 #define MAX_TAREFAS 5
 
 // CONFIGURAÇÕES DE REDE
@@ -21,8 +23,6 @@
 #define LED_VERDE        4
 #define LED_VERMELHO     5
 #define SERVO_TAMPA      19
-#define TX_COM_ESP       8
-#define RX_COM_ESP       9
 #define ESP8266_rxPin    15
 #define ESP8266_txPin    16
 
@@ -63,6 +63,5 @@
 #define A06           5
 #define A07           6
 #define A08           7
-#define A09           8
 
 #endif

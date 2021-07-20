@@ -1,11 +1,10 @@
 #ifndef LEITOR_USB_H_INCLUDED
 #define LEITOR_USB_H_INCLUDED
 
+#include "definicoes_sistema.h"
+#include "leitor.h"
 #include <hidboot.h>
 #include <usbhub.h>
-#include <Arduino.h>
-#include "leitor.h"
-#include "definicoes_sistema.h"
 
 class LeitorUSB : public Leitor, public KeyboardReportParser{
   public:

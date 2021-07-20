@@ -1,10 +1,9 @@
 #ifndef ESP8266_H_INCLUDED
 #define ESP8266_H_INCLUDED
 
-#include <Arduino.h>
-#include <SoftwareSerial.h>
-#include "modulo_wifi.h"
 #include "definicoes_sistema.h"
+#include "modulo_wifi.h"
+#include <SoftwareSerial.h>
 
 #define CWMODE '1'
 #define CIPMUX '1'

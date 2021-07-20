@@ -1,3 +1,0 @@
-porta 6 nao funciona no Usb Host Shield
-portas 10, 11, 12 e 13 são ussadas pra fazer spi no UHS
-porta 0 tem que encaixar bem no UHS
