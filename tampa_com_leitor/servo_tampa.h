@@ -2,11 +2,12 @@
 #define TAMPA_INCLUDED
 
 #include <Servo.h>
+#include "atuador_tampa.h"
 #include "definicoes_sistema.h"
 
-class Tampa : public Servo { //Servo {
+class ServoTampa : public AtuadorTampa, public Servo { //Servo {
   public:
-    Tampa(int _pin, int _angAberta, int _angFechada,
+    ServoTampa(int _pin, int _angAberta, int _angFechada,
       int _delayFechamento);
     void setup();
     void abrir();

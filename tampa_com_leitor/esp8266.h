@@ -3,12 +3,13 @@
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+#include "modulo_wifi.h"
 #include "definicoes_sistema.h"
 
 #define CWMODE '1'
 #define CIPMUX '1'
 
-class ESP8266 {
+class ESP8266: public ModuloWifi {
   public:
     ESP8266(int RX_PIN, int TX_PIN);
     void setup();
@@ -17,8 +18,6 @@ class ESP8266 {
     void limpaSerial();
     boolean conectaServer();
     void fazRequest(char codigoDeBarras[]);
-    // void timeout_start();
-    // boolean timeout_check(int timeout_ms);
 
     SoftwareSerial Serial;
 
@@ -34,15 +33,5 @@ class ESP8266 {
 };
 
 extern char resposta_site[2];
-
-// boolean read_until_ESP(const char keyword1[], int key_size, int timeout_val, byte mode);
-// void timeout_start();
-// boolean timeout_check(int timeout_ms);
-// void serial_dump_ESP();
-// boolean connect_ESP();
-
-// extern char resposta_site[2];
-// extern SoftwareSerial ESP8266;
-// extern void connect_webhost(char codigoDeBarras[]);
 
 #endif

@@ -1,62 +1,53 @@
-#include "leitor.h"
+#include "leitor_usb.h"
 
 USB Usb;
 HIDBoot<USB_HID_PROTOCOL_KEYBOARD> HidKeyboard(&Usb);
 
-Leitor::Leitor(char *_codigoDeBarras){
+LeitorUSB::LeitorUSB(char *_codigoDeBarras){
 //  codigoLido = "";
   codigoDeBarras = _codigoDeBarras;
   idx_codBar = 0;
   leituraRealizada = false;
 }
 
-void Leitor::PrintKey(byte m, byte key){
+void LeitorUSB::PrintKey(byte m, byte key){
   MODIFIERKEYS mod;
   *((byte*)&mod) = m;
 }
 
-void Leitor::setup(){
-  // //##Serial.println("Iniciando USB Host Shield");
-  if (Usb.Init() == -1) {
-    // //##Serial.println("Falha ao iniciar USB");
-  }
+void LeitorUSB::setup(){
+  if (Usb.Init() == -1) {}
   delay( 200 );
-
-  // //##Serial.println("Iniciando Leitor de Código de Barras");
   HidKeyboard.SetReportParser(0, this);
-  // //##Serial.println("Setup concluído");
-
   codigoDeBarras[0] = 0;
-  
 }
 
-void Leitor::ler(){
+void LeitorUSB::ler(){
   Usb.Task();
 }
 
-bool Leitor::completouCodigo(){
+bool LeitorUSB::completouCodigo(){
   this->ler();
   return leituraRealizada;
 }
 
-void Leitor::resetar(){
+void LeitorUSB::resetar(){
     idx_codBar = 0;
     leituraRealizada = false;
 }
 
-void Leitor::OnKeyDown(byte mod, byte key){
+void LeitorUSB::OnKeyDown(byte mod, byte key){
   PrintKey(mod, key);
   byte c = OemToAscii(mod, key);
-
   if (c)
     OnKeyPressed(c);
 }
 
-void Leitor::OnKeyUp(byte mod, byte key){
+void LeitorUSB::OnKeyUp(byte mod, byte key){
   PrintKey(mod, key);
 }
 
-void Leitor::OnKeyPressed(byte key){
+void LeitorUSB::OnKeyPressed(byte key){
   if (!leituraRealizada){
     if(key == 19){
       codigoDeBarras[idx_codBar++] = 0;

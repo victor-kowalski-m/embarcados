@@ -1,29 +1,12 @@
 #ifndef LEITOR_H_INCLUDED
 #define LEITOR_H_INCLUDED
 
-#include <hidboot.h>
-#include <usbhub.h>
-#include <Arduino.h>
-#include "definicoes_sistema.h"
-
-class Leitor : public KeyboardReportParser{
-  public:
-    Leitor(char *_codigoDeBarras);
-    void PrintKey(byte mod, byte key);
-    void setup();
-    void ler();  
-    bool completouCodigo();
-    void resetar();
-
-  private:
-    bool leituraRealizada;
-    char *codigoDeBarras;
-    char idx_codBar;
-
-    void OnKeyDown  (byte mod, byte key);
-    void OnKeyUp  (byte mod, byte key);
-    void OnKeyPressed(byte key);
-
+class Leitor {
+  public:   
+    virtual void setup();
+    virtual void ler();  
+    virtual bool completouCodigo();
+    virtual void resetar();
 };
 
 #endif

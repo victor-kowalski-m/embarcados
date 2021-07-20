@@ -1,7 +1,7 @@
 #include <Arduino.h>
-#include "tampa.h"
+#include "servo_tampa.h"
 
-Tampa::Tampa(int _pin, int _angAberta, int _angFechada,
+ServoTampa::ServoTampa(int _pin, int _angAberta, int _angFechada,
    int _delayFechamento){
   pin = _pin;
   angAberta = _angAberta;
@@ -9,7 +9,7 @@ Tampa::Tampa(int _pin, int _angAberta, int _angFechada,
   delayFechamento = _delayFechamento;
 }
 
-void Tampa::setup(){
+void ServoTampa::setup(){
   this->attach(pin);
   aberta = true;
   instanteAbertura = 0;
@@ -17,7 +17,7 @@ void Tampa::setup(){
   delay(500);
 }
 
-void Tampa::abrir(){
+void ServoTampa::abrir(){
   if(!aberta) {
     this->write(angAberta);
     aberta = true;
@@ -25,17 +25,17 @@ void Tampa::abrir(){
   instanteAbertura = millis();
 }
 
-void Tampa::fechar(){
+void ServoTampa::fechar(){
   if(aberta) {
     this->write(angFechada);
     aberta = false;
   }
 }
 
-bool Tampa::estaAberta(){
+bool ServoTampa::estaAberta(){
   return aberta;
 }
 
-bool Tampa::passouDelay(){
+bool ServoTampa::passouDelay(){
   return (millis()-instanteAbertura) > delayFechamento;
 }

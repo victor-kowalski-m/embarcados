@@ -12,23 +12,17 @@ void Led::setup(){
 void Led::ligar(){
   digitalWrite(pin, HIGH);
   aceso = true;
-  instanteToggle = millis();
 }
 
 void Led::desligar(){
   digitalWrite(pin, LOW);
   aceso = false;
-  instanteToggle = millis();
 }
 
 void Led::toggle(){
   aceso? this->desligar():this->ligar();
 }
 
-bool Led::estaAceso(){
+bool Led::estaLigado(){
   return aceso;
-}
-
-long Led::ultimoToggle(){
-  return instanteToggle;
 }
