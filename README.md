@@ -4,7 +4,7 @@ Code for the final project for the undergraduate course "Embedded Systems" (PMR3
 
 Consists in a “smart trash bin” connected to an online web platform that provides an automated way of managing grocery lists in a household. 
 
-Everytime the user throws away the package of a product, the device decrements its quantity in an online database in such way that the groceries list is always updated. Furthermore, the devices is equipped with an actuated lid that opens when approximation is detected.   
+Everytime the user throws away the package of a product, the device decrements its quantity in an online database in such way that the groceries list is always updated. Furthermore, the device is equipped with an actuated lid that opens when approximation is detected.   
 
 An Arduino UNO and an ESP8266 were used for the implementation.
 
