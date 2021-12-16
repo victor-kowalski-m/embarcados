@@ -1,6 +1,6 @@
 # Smart thrash bin
 
-Code for the final project for the undergraduate course "Embedded Systems" from the seventh semester of Mechatronics Engineering at Universidade de São Paulo.
+Code for the final project for the undergraduate course "Embedded Systems" (PMR3402) from the seventh semester of Mechatronics Engineering at Universidade de São Paulo.
 
 Consists in a “smart trash bin” connected to an online web platform that provides an automated way of managing grocery lists in a household.
 
