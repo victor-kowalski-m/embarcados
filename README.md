@@ -2,7 +2,9 @@
 
 Code for the final project for the undergraduate course "Embedded Systems" (PMR3402) from the seventh semester of Mechatronics Engineering at Universidade de São Paulo.
 
-Consists in a “smart trash bin” connected to an online web platform that provides an automated way of managing grocery lists in a household.
+Consists in a “smart trash bin” connected to an online web platform that provides an automated way of managing grocery lists in a household. 
+
+Everytime the user throws away the package of a product, the device decrements its quantity in an online database in such way that the groceries shopping list is always updated.   
 
 An Arduino UNO and an ESP8266 were used for the implementation.
 
