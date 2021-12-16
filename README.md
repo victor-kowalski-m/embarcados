@@ -15,4 +15,4 @@ Code structure (in the *lixeira_inteligente* folder):
 - *esp8266.cpp*: implements wi-fi communication.
 - Remaining files: implement classes for each component of the system.
 
-Additionaly, a web application was developed for user interaction. The code for it can be checked here: [Merc4d0](https://github.com/victor-kowalski-m/merc4d0).
+Additionally, a web application was developed for user interaction. The code for it can be checked here: [Merc4d0](https://github.com/victor-kowalski-m/merc4d0).
