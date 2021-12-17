@@ -16,3 +16,9 @@ Code structure (in the *lixeira_inteligente* folder):
 - Remaining files: implement classes for each component of the system.
 
 Additionally, a web application was developed for user interaction. The code for it can be checked here: [Merc4d0](https://github.com/victor-kowalski-m/merc4d0).
+
+
+
+https://user-images.githubusercontent.com/70666266/146567164-c1d3435c-c52c-47d1-b083-c0c59be770b3.mp4
+
+
