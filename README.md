@@ -1,6 +1,6 @@
 # Smart thrash bin
 
-Code from the final project for the undergraduate course "Embedded Systems" (PMR3402) from the Mechatronics Engineering degree course at Universidade de São Paulo.
+C++ code from the final project for the undergraduate course "Embedded Systems" (PMR3402) from the Mechatronics Engineering degree course at Universidade de São Paulo.
 
 Consists in a “smart trash bin” connected to an online web platform that provides an automated way of managing grocery lists in a household. 
 
