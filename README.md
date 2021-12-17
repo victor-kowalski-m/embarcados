@@ -8,6 +8,8 @@ Everytime the user throws away the package of a product, the device decrements i
 
 An Arduino UNO and an ESP8266 were used for the implementation.
 
+https://user-images.githubusercontent.com/70666266/146568405-b15c15c1-3cb0-4807-baae-6f00b728f491.mp4
+
 Code structure (in the *lixeira_inteligente* folder):
 
 - *lixeira_inteligente.ino*: main file, implements a state machine and coordinates the system operation.
@@ -16,7 +18,4 @@ Code structure (in the *lixeira_inteligente* folder):
 - Remaining files: implement classes for each component of the system.
 
 Additionally, a web application was developed for user interaction. The code for it can be checked here: [Merc4d0](https://github.com/victor-kowalski-m/merc4d0).
-
-
-https://user-images.githubusercontent.com/70666266/146568405-b15c15c1-3cb0-4807-baae-6f00b728f491.mp4
 
