@@ -10,7 +10,7 @@ An Arduino UNO and an ESP8266 were used for the implementation.
 
 https://user-images.githubusercontent.com/70666266/146568405-b15c15c1-3cb0-4807-baae-6f00b728f491.mp4
 
-Code structure (in the [lixeira_inteligente](lixeira_inteligente)* folder):
+Code structure (in the [lixeira_inteligente](lixeira_inteligente) folder):
 
 - [lixeira_inteligente.ino](lixeira_inteligente/lixeira_inteligente.ino): main file, implements a state machine and coordinates the system operation.
 - [task_switcher.cpp](lixeira_inteligente/task_switcher.cpp): implements task scheduling functionalities.
