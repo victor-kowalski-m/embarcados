@@ -19,6 +19,6 @@ Additionally, a web application was developed for user interaction. The code for
 
 
 
-https://user-images.githubusercontent.com/70666266/146567164-c1d3435c-c52c-47d1-b083-c0c59be770b3.mp4
+[Short Demo](https://user-images.githubusercontent.com/70666266/146567164-c1d3435c-c52c-47d1-b083-c0c59be770b3.mp4)
 
 
