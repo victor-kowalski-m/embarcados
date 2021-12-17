@@ -18,7 +18,5 @@ Code structure (in the *lixeira_inteligente* folder):
 Additionally, a web application was developed for user interaction. The code for it can be checked here: [Merc4d0](https://github.com/victor-kowalski-m/merc4d0).
 
 
-
-[Short Demo](https://user-images.githubusercontent.com/70666266/146567164-c1d3435c-c52c-47d1-b083-c0c59be770b3.mp4)
-
+https://user-images.githubusercontent.com/70666266/146568405-b15c15c1-3cb0-4807-baae-6f00b728f491.mp4
 
