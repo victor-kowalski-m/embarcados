@@ -10,6 +10,8 @@ An Arduino UNO and an ESP8266 were used for the implementation.
 
 https://user-images.githubusercontent.com/70666266/146568405-b15c15c1-3cb0-4807-baae-6f00b728f491.mp4
 
+Extended demo with voiceover in Portuguese can be found [here](https://drive.google.com/file/d/1op2CbkPiQ7sqPeaWEq3xuLyHC-ZM4BMC/view?usp=sharing).
+
 Code structure (in the [lixeira_inteligente](lixeira_inteligente) folder):
 
 - [lixeira_inteligente.ino](lixeira_inteligente/lixeira_inteligente.ino): main file, implements a state machine and coordinates the system operation.
